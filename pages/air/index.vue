@@ -1,6 +1,7 @@
 <template>
   <div class="a_index">
-      这是机票模块的首页
+      <div>国内机票</div>
+      
   </div>
 </template>
 
