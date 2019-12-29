@@ -42,20 +42,33 @@ export default {
     };
   },
   methods: {
-    submitForm(LoginForm) {
+    submitForm() {
         this.$refs.LoginForm.validate(valid => {
         if (valid) {
-            this.$axios({
-              method:'post',
-              url:'/accounts/login',
-              data: this.LoginForm
-            }).then(res=>{
-              // console.log(res)
-              if(res.status===200){
-                this.$message.success('登录成功，将跳转到上一页')
-                this.$router.back()
+          // 将登录发送请求的函数放置到store的user.js中
+            // this.$axios({
+            //   method:'post',
+            //   url:'/accounts/login',
+            //   data: this.LoginForm
+            // }).then(res=>{
+            //   // console.log(res)
+            //   if(res.status===200){
+            //     this.$message.success('登录成功，将跳转到上一页')
+            //     this.$router.back()
+            //   }
+            // }).catch(err=>{
+            //   this.$message.warning('登录失败，账号或密码错误')
+            // })
+            // 换成调用actions的登录方法
+            this.$store.dispatch('user/login',this.LoginForm).then(res=>{
+              if(res===true){
+                this.$message.success('登录成功，返回上一个页面')
               }
+            }).catch(err=>{
+                this.$message.warning('账号或者密码错误')
             })
+            // console.log(aa) 通过调用这个方法，获取到可promise对象，意味着我们可以使用.then了，
+            // 添加判断，如果res===true，那么就登录成功了
         } else {
             return false
         }

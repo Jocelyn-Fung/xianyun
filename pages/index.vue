@@ -62,8 +62,9 @@ export default {
         this.$router.push({path:'/air'})
       }
     },
+    // 测试vuex
     ChangeName(){
-     this.$store.commit('user/SetName', '12345')
+     this.$store.commit('user/SetUserInfo', '12321')
     }
   }
 };
