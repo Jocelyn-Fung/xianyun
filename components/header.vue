@@ -39,13 +39,25 @@
 
         <!-- 不存在用户信息展示登录注册链接 -->
         <nuxt-link to="/user/login" class="account-link" >登录 / 注册</nuxt-link>
+        <span>{{$store.state.user.name}}</span>
       </el-row>
     </el-row>
   </header>
 </template>
 
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      name:''
+    }
+  },
+  mounted(){
+    let newName = this.$store.state.user.name
+    // console.log(newName) 获取到Jack
+    this.name = newName
+  }
+};
 </script>
 
 <style lang='less'>

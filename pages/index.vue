@@ -14,6 +14,7 @@
       </el-carousel-item>
       <!-- 搜索框 -->
       <div class="banner-content">
+        <button @click="ChangeName">点击修改header</button>
         <div class="search-bar">
           <!-- tab栏 -->
           <el-row type="flex" class="search-tab">
@@ -60,6 +61,9 @@ export default {
       if(this.current===2){
         this.$router.push({path:'/air'})
       }
+    },
+    ChangeName(){
+     this.$store.commit('user/SetName', '12345')
     }
   }
 };
