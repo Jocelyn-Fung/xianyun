@@ -42,10 +42,20 @@ export default {
     };
   },
   methods: {
-    submitForm() {
+    submitForm(LoginForm) {
         this.$refs.LoginForm.validate(valid => {
         if (valid) {
-            console.log('验证通过，可以去发请求了')
+            this.$axios({
+              method:'post',
+              url:'/accounts/login',
+              data: this.LoginForm
+            }).then(res=>{
+              // console.log(res)
+              if(res.status===200){
+                this.$message.success('登录成功，将跳转到上一页')
+                this.$router.back()
+              }
+            })
         } else {
             return false
         }
