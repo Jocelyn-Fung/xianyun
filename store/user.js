@@ -5,15 +5,10 @@ export const state = () => ({
 })
 // 2. 同步state的数据
 export const mutations = {
-    // 测试vuex
-//   SetName(state, data) {
-//     state.name = data
-//   }
 SetUserInfo(state,data){
     state.userInfo = data
-    // console.log('eeq',state.userInfo) 这个获取到的是用户写入的数据，发送请求成功可以看到
-}
-
+    // console.log(state.userInfo) 这个获取到的是用户写入的数据，发送请求成功可以看到
+  }
 }
 
 // 3. 异步state的数据，存放公共的请求函数，并且该函数可能会修改state的数据，但不一定要修改
@@ -40,8 +35,4 @@ export const actions={
             }
           })
      }
-    //  ,
-    //  logout(store){ 
-    //     store.userInfo ={}
-    //  }
 }

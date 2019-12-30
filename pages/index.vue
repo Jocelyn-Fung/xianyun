@@ -14,7 +14,6 @@
       </el-carousel-item>
       <!-- 搜索框 -->
       <div class="banner-content">
-        <button @click="ChangeName">点击修改header</button>
         <div class="search-bar">
           <!-- tab栏 -->
           <el-row type="flex" class="search-tab">
@@ -49,9 +48,10 @@ export default {
     this.$axios({
       url: "/scenics/banners"
     }).then(res => {
-      // console.log(res) 通过解构，直接获取到4个数组，将它赋值给banner
+      // console.log(res) //通过解构，直接获取到4个数组，将它赋值给banner
       const { data } = res.data;
       this.banner = data;
+      // console.log(this.banner)
     });
   },
   methods:{
@@ -61,10 +61,6 @@ export default {
       if(this.current===2){
         this.$router.push({path:'/air'})
       }
-    },
-    // 测试vuex
-    ChangeName(){
-     this.$store.commit('user/SetUserInfo', '12321')
     }
   }
 };

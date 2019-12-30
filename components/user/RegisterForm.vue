@@ -1,98 +1,173 @@
 <template>
-    <el-form 
-        :model="form" 
-        ref="form" 
-        :rules="rules" 
-        class="form">
-            <el-form-item class="form-item">
-                <el-input 
-                placeholder="用户名手机">
-                </el-input>
-            </el-form-item>
+  <el-form :model="form" ref="form" :rules="rules" class="form">
+    <el-form-item class="form-item" prop="username">
+      <el-input placeholder="用户名手机" v-model="form.username"></el-input>
+    </el-form-item>
 
-            <el-form-item class="form-item">
-                <el-input 
-                placeholder="验证码" >
-                    <template slot="append">
-                        <el-button @click="handleSendCaptcha">
-                            发送验证码
-                        </el-button>
-                    </template>
-                </el-input>
-            </el-form-item>
+    <el-form-item class="form-item" prop="captcha">
+      <el-input placeholder="验证码" v-model="form.captcha">
+        <template slot="append">
+          <el-button @click="handleSendCaptcha">发送验证码</el-button>
+        </template>
+      </el-input>
+    </el-form-item>
 
-            <el-form-item class="form-item">
-                <el-input 
-                placeholder="你的名字">
-                </el-input>
-            </el-form-item>
+    <el-form-item class="form-item" prop="nickname">
+      <el-input placeholder="你的名字" v-model="form.nickname"></el-input>
+    </el-form-item>
 
-            <el-form-item class="form-item">
-                <el-input 
-                placeholder="密码" 
-                type="password"
-                ></el-input>
-            </el-form-item>
+    <el-form-item class="form-item" prop="password">
+      <el-input placeholder="密码" type="password" v-model="form.password"></el-input>
+    </el-form-item>
 
-            <el-form-item class="form-item">
-                <el-input 
-                placeholder="确认密码" 
-                type="password">
-                </el-input>
-            </el-form-item>
+    <el-form-item class="form-item" prop="checkpassword">
+      <el-input placeholder="确认密码" type="password" v-model="form.checkpassword"></el-input>
+    </el-form-item>
 
-            <el-button 
-            class="submit" 
-            type="primary" 
-            @click="handleRegSubmit">
-                注册
-            </el-button>
-        </el-form>
+    <el-button class="submit" type="primary" @click="handleRegSubmit">注册</el-button>
+  </el-form>
 </template>
 
 <script>
 export default {
-    data(){
-        return {
-            // 表单数据
-            form: {},
-            // 表单规则
-            rules: {},
-        }
-    },
-    methods: {
-        // 发送验证码
-        handleSendCaptcha(){
-
-        },
-
-
-        // 注册
-        handleRegSubmit(){
-           console.log(this.form)
-        }
+  data() {
+    // 添加对用户手机号码的限制的正则表达式
+    var checkUsername = (rule, value, callback) => {
+      let reg = /^1\d{10}$/;
+      if (reg.test(value)) {
+        // document.querySelector('.el-input__inner').className='is-success'
+        callback();
+      } else if(value===''){
+          callback('手机号码不能为空')
+      }else {
+        callback("手机号码格式错误");
+      }
     }
-}
+    //   对名字nickname进行校正
+    var checkNickname = (rule, value, callback) => {
+      let reg = /^\w{3,12}$/;
+      if (reg.test(value)) {
+        // document.querySelector('.el-input__inner').className='is-success'
+        callback();
+      } else if(value===''){
+          callback('名字不能为空')
+      }else {
+        callback("只能输入3-12个字符");
+      }
+    }
+    // 对输入的密码进行校正
+        var validatePass = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请输入密码'));
+        } else {
+          if (this.form.checkpassword !== '') {
+            this.$refs.form.validateField('checkpassword');
+          }
+          callback();
+        }
+      };
+    //   对两次输入的密码进行校正是否一致
+      var validatePass2 = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.form.password) {
+          callback(new Error('两次输入密码不一致!'));
+        } else {
+          callback();
+        }
+      }
+    return {
+      // 表单数据
+      form: {
+        username: "",
+        nickname: "",
+        captcha: "",
+        password: "",
+        checkpassword:''
+      },
+      // 表单规则
+      rules: {
+        username: [
+          {
+            validator: checkUsername,
+            trigger: "blur"
+          }
+        ],
+        nickname:[
+            {validator:checkNickname, trigger:'blur'}
+        ],
+        password: [
+            { validator: validatePass, trigger: 'blur' }
+          ],
+        checkpassword: [
+            { validator: validatePass2, trigger: 'blur' }
+          ],
+      }
+    };
+  },
+  methods: {
+    // 发送验证码,获取验证码
+    handleSendCaptcha() {
+        this.$axios({
+            method:'post',
+            url:'/captchas',
+            data:{
+                tel: this.form.username
+            }
+        }).then(res=>{
+           if(res.status===200){
+               let code = res.data.code
+               this.$message.success('验证码是：'+ code)
+               this.form.captcha=code
+              //  console.log(this.form.captcha)
+           }
+        })
+    },
+
+    // 注册
+    handleRegSubmit() {
+    //   console.log(this.form);
+    let form = this.form
+    delete form.checkpassword //删除对象中的checkpassword的属性，因为发送请求的时候根本不需要
+    console.log(form)
+    this.$axios({
+        method:'POST',
+        url:'/accounts/register',
+        data: form
+    }).then(res=>{
+        console.log(res)
+        if(res.status===200){
+            this.$message.success('注册成功，请登录')
+        }
+    })
+    }
+  }
+};
 </script>
 
 <style scoped lang="less">
-    .form{
-        padding:25px;
-    }
+.form {
+  padding: 25px;
+}
 
-    .form-item{
-        margin-bottom:20px;
-    }
+.form-item {
+  margin-bottom: 20px;
+}
 
-    .form-text{
-        font-size:12px;
-        color:#409EFF;
-        text-align: right;
-        line-height: 1;
-    }
+.form-text {
+  font-size: 12px;
+  color: #409eff;
+  text-align: right;
+  line-height: 1;
+}
 
-    .submit{
-        width:100%;
-        margin-top:10px;
-    }
+.submit {
+  width: 100%;
+  margin-top: 10px;
+}
+// .is-success{
+//     border:1px solid green;
+//     border-radius: 7px;
+//     height:41px;
+// }
 </style>

@@ -40,8 +40,6 @@
 
         <!-- 不存在用户信息展示登录注册链接 -->
         <nuxt-link to="/user/login" class="account-link" v-else>登录 / 注册</nuxt-link>
-        <!-- 测试vuex -->
-        <!-- <span>{{$store.state.user.userInfo}}</span> -->
       </el-row>
     </el-row>
   </header>
@@ -63,11 +61,6 @@ export default {
       this.$router.back()
     }
   }
-  // mounted(){
-  //   let newName = this.$store.state.user.name
-  //   // console.log(newName) 获取到Jack
-  //   this.name = newName
-  // }
 };
 </script>
 
