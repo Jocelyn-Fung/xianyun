@@ -7,7 +7,7 @@
     <el-form-item class="form-item" prop="captcha">
       <el-input placeholder="验证码" v-model="form.captcha">
         <template slot="append">
-          <el-button @click="handleSendCaptcha">发送验证码</el-button>
+          <el-button @click="handleSendCaptcha">获取验证码</el-button>
         </template>
       </el-input>
     </el-form-item>
@@ -35,7 +35,7 @@ export default {
     var checkUsername = (rule, value, callback) => {
       let reg = /^1\d{10}$/;
       if (reg.test(value)) {
-        // document.querySelector('.el-input__inner').className='is-success'
+        // document.querySelector('.el-input__inner:nth-child(1)').style ='border-color: #67c23a'
         callback();
       } else if(value===''){
           callback('手机号码不能为空')
@@ -45,9 +45,9 @@ export default {
     }
     //   对名字nickname进行校正
     var checkNickname = (rule, value, callback) => {
-      let reg = /^\w{3,12}$/;
+      let reg = /^[\u4e00-\u9fa5_a-zA-Z0-9_]{3,12}$/; //中英文数字等都可以
       if (reg.test(value)) {
-        // document.querySelector('.el-input__inner').className='is-success'
+        document.querySelectorAll('.el-input__inner').style ='border:1px solid #67c23a'
         callback();
       } else if(value===''){
           callback('名字不能为空')
@@ -129,13 +129,13 @@ export default {
     //   console.log(this.form);
     let form = this.form
     delete form.checkpassword //删除对象中的checkpassword的属性，因为发送请求的时候根本不需要
-    console.log(form)
+    // console.log(form)
     this.$axios({
         method:'POST',
         url:'/accounts/register',
         data: form
     }).then(res=>{
-        console.log(res)
+        // console.log(res)
         if(res.status===200){
             this.$message.success('注册成功，请登录')
         }
@@ -165,9 +165,10 @@ export default {
   width: 100%;
   margin-top: 10px;
 }
-// .is-success{
-//     border:1px solid green;
-//     border-radius: 7px;
-//     height:41px;
-// }
+.is-success{
+    border:1px solid #67c23a;
+    // height:41px;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
 </style>
