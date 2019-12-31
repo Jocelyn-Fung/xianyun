@@ -65,7 +65,7 @@ export default {
       value:'',
       pickerOptions: {
           disabledDate(time) {
-            return  time.getTime() < Date.now(); //这里如何实现限制只能购买1周以内的机票呢
+            return  time.getTime()+3600*1000*24 < Date.now();
           }
       },
       // 

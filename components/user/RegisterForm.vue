@@ -106,20 +106,20 @@ export default {
     };
   },
   methods: {
-    // 发送验证码,获取验证码
+    // 发送验证码,获取验证码  
     handleSendCaptcha() {
-        this.$axios({
-            method:'post',
-            url:'/captchas',
-            data:{
-                tel: this.form.username
-            }
-        }).then(res=>{
+        // this.$axios({  //封装到store中
+        //     method:'post',
+        //     url:'/captchas',
+        //     data:{
+        //         tel: this.form.username
+        //     }
+        // })
+        this.$store.dispatch('user/sendCaptcha',this.form.username).then(res=>{
            if(res.status===200){
                let code = res.data.code
                this.$message.success('验证码是：'+ code)
                this.form.captcha=code
-              //  console.log(this.form.captcha)
            }
         })
     },
@@ -127,19 +127,20 @@ export default {
     // 注册
     handleRegSubmit() {
     //   console.log(this.form);
-    let form = this.form
-    delete form.checkpassword //删除对象中的checkpassword的属性，因为发送请求的时候根本不需要
+    const {checkpassword, ...props} = this.form
+    // delete form.checkpassword //删除对象中的checkpassword的属性，因为发送请求的时候根本不需要，但是存在问题,因为属性被删除了
     // console.log(form)
-    this.$axios({
-        method:'POST',
-        url:'/accounts/register',
-        data: form
-    }).then(res=>{
-        // console.log(res)
-        if(res.status===200){
-            this.$message.success('注册成功，请登录')
-            this.$router.back()
-        }
+    // this.$axios({
+    //     method:'POST',
+    //     url:'/accounts/register',
+    //     data: props
+    // })
+    this.$store.dispatch('user/register', props)
+    .then(res=>{
+        // console.log(res) 接收从user.js中的返回值，true，意味着注册成功
+       if(res===true){
+         this.$message.success("登录成功，返回上一个页面");
+       }
     })
     }
   }
