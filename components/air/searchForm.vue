@@ -21,6 +21,7 @@
           :fetch-suggestions="queryDepartSearch"
           @select="handleDepartSelect"
           class="el-autocomplete"
+          v-model="start"
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="到达城市">
@@ -29,11 +30,12 @@
           placeholder="请搜索到达城市"
           @select="handleDestSelect"
           class="el-autocomplete"
+          v-model="destination"
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="出发时间">
         <!-- change 用户确认选择日期时触发 -->
-        <el-date-picker type="date" placeholder="请选择日期" style="width: 100%;"></el-date-picker>
+        <el-date-picker type="date" placeholder="请选择日期" style="width: 100%;" v-model="value" :picker-options="pickerOptions"></el-date-picker>
       </el-form-item>
       <el-form-item label>
         <el-button style="width:100%;" type="primary" icon="el-icon-search">搜索</el-button>
@@ -56,6 +58,17 @@ export default {
         { icon: "iconfont icondancheng", name: "单程" },
         { icon: "iconfont iconshuangxiang", name: "往返" }
       ],
+      // 2.出发城市
+      start:'',
+      destination:'',
+      // 3.日期的属性
+      value:'',
+      pickerOptions: {
+          disabledDate(time) {
+            return  time.getTime() < Date.now(); //这里如何实现限制只能购买1周以内的机票呢
+          }
+      },
+      // 
       restaurants: [],
       state: "",
       timeout: null
@@ -92,7 +105,9 @@ export default {
     handleDestSelect(item) {},
 
     // 确认选择日期时触发
-    handleDate(value) {},
+    handleDate(value) {
+
+    },
 
     // 触发和目标城市切换时触发
     handleReverse() {},
