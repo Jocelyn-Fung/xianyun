@@ -7,13 +7,13 @@
     <el-form-item class="form-item" prop="captcha">
       <el-input placeholder="验证码" v-model="form.captcha">
         <template slot="append">
-          <el-button @click="handleSendCaptcha">获取验证码</el-button>
+          <el-button @click="handleSendCaptcha" class="sendCode">获取验证码</el-button>
         </template>
       </el-input>
     </el-form-item>
 
     <el-form-item class="form-item" prop="nickname">
-      <el-input placeholder="你的名字" v-model="form.nickname"></el-input>
+      <el-input placeholder="昵称" v-model="form.nickname"></el-input>
     </el-form-item>
 
     <el-form-item class="form-item" prop="password">
@@ -108,18 +108,15 @@ export default {
   methods: {
     // 发送验证码,获取验证码  
     handleSendCaptcha() {
-        // this.$axios({  //封装到store中
-        //     method:'post',
-        //     url:'/captchas',
-        //     data:{
-        //         tel: this.form.username
-        //     }
-        // })
+      // 将请求方法封装到user.js中
+      if(this.form.username===''){
+        this.$message.error('手机号码不能为空')
+        return;
+      }
         this.$store.dispatch('user/sendCaptcha',this.form.username).then(res=>{
            if(res.status===200){
                let code = res.data.code
-               this.$message.success('验证码是：'+ code)
-               this.form.captcha=code
+               this.$message.success('验证码已成功发送到您的手机:000000')
            }
         })
     },

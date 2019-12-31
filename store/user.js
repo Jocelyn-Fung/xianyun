@@ -52,7 +52,7 @@ export const actions = {
       url: '/accounts/register',
       data
     }).then(res=>{
-      console.log('1211',res)
+      // console.log('1211',res)
       // 如果注册成功了直接就让用户处于登录状态
       this.$router.back()
       //   调用user下的mutations的方法
