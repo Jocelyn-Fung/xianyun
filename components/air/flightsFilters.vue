@@ -86,7 +86,8 @@ export default {
       let arr = this.data.flights.filter(item => {
         // 默认所有的选项都符合条件
         let valid = true;
-        // 起飞机场
+        // 将不符合条件的过滤掉
+        // 起飞机场 
         if ( this.airport && item.org_airport_name !== this.airport  ) {
           valid = false;
         }

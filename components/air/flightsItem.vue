@@ -42,7 +42,7 @@
             </el-col>
             <el-col :span="5" class="price">￥{{item.par_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini">选定</el-button>
+              <el-button type="warning" size="mini" @click="TobuyTicket(data.id,item.seat_xid)">选定</el-button>
               <p>剩余：{{item.discount}}</p>
             </el-col>
           </el-row>
@@ -82,6 +82,19 @@ export default {
             return `${Math.floor(Arr / 60)}时`+`${ Arr % 60 }分`
              //返回的数据格式时 2时50分，所以需要拼接字符串，第一个是小时，第二个取余分钟
         }
+    },
+    methods:{
+      // 点击跳转到新的购买机票。填写信息的页面
+      TobuyTicket(id,seat_xid){
+        // console.log(this.data.seat_infos[0].seat_xid)
+        this.$router.push({
+          path:'/air/order',
+          query:{
+            id,
+            seat_xid,
+          }
+        })
+      }
     }
 };   
 </script>
