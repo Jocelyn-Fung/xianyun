@@ -30,12 +30,11 @@
     <div class="air-column">
       <h2>保险</h2>
       <div>
-        <div class="insurance-item">
+        <div class="insurance-item" v-for="(item, index) in data.insurances" :key="index">
           <el-checkbox
-            :label="item.type + '：￥'+ item.price +'/份x1 最高赔付' + item.compensation"
+            @change="handleInsurances(item.id)"
+            :label="item.type + '：￥'+ item.price +'/份x1 最高赔付' + item.compensation+'元'"
             border
-            v-for="(item, index) in data.insurances"
-            :key="index"
           ></el-checkbox>
         </div>
       </div>
@@ -52,7 +51,7 @@
           <el-form-item label="手机">
             <el-input placeholder="请输入内容" v-model="contactPhone">
               <template slot="append">
-                <el-button @click="handleSendCaptcha()">发送验证码</el-button>
+                <el-button @click="handleSendCaptcha">发送验证码</el-button>
               </template>
             </el-input>
           </el-form-item>
@@ -98,32 +97,46 @@ export default {
   methods: {
     // 添加乘机人
     handleAddUsers() {
-      this.users.push({  //为了避免在双向绑定的时候每个输入框的内容都受到第一个模板的影响，添加一个新对象进去
-          username:'',
-          id:''
+      this.users.push({
+        //为了避免在双向绑定的时候每个输入框的内容都受到第一个模板的影响，添加一个新对象进去
+        username: "",
+        id: ""
       });
     },
 
     // 移除乘机人
     handleDeleteUser(index) {
-        this.users.splice(index,1)
-        //   console.log(this.users); /因为users本来就是个数组所以可以直接使用索引值删除
+      this.users.splice(index, 1);
+      //   console.log(this.users); /因为users本来就是个数组所以可以直接使用索引值删除
+    },
+    // 保险 为什么点击不到？
+    handleInsurances(id) {
+      // console.log(id)
+      // 判断如果数组中已经有这个id了，说明用户已经点击过了，再一次的点击是取消的意思，应该从数组中清除
+      let index = this.insurances.indexOf(id)
+      if (index > -1) {
+        this.insurances.splice(index, 1);
+      } else {
+        this.insurances.push(id);
+      }
+       console.log(this.insurances);
     },
 
     // 发送手机验证码
     handleSendCaptcha() {
-        // console.log(this.contactPhone)获取到用户输入的手机号码，然后再调用store里面发送验证码的方法
-        if(!this.contactPhone) {
-            this.$message.error('请先填写手机号码')
-            return
-        }
-        this.$store.dispatch('user/sendCaptcha', this.contactPhone)
-        this.$message.success('手机验证码已经发送到您的手机！000000')
+      // console.log(this.contactPhone)获取到用户输入的手机号码，然后再调用store里面发送验证码的方法
+      if (!this.contactPhone) {
+        this.$message.error("请先填写手机号码");
+        return;
+      }
+      this.$store.dispatch("user/sendCaptcha", this.contactPhone).then(res => {
+        this.$message.success("手机验证码已经发送到您的手机！000000");
+      });
     },
 
     // 提交订单
     handleSubmit() {
-      //   console.log(this.data);
+      // console.log(this.data);
     }
   }
 };

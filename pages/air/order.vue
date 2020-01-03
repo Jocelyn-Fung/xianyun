@@ -7,7 +7,9 @@
       </div>
 
       <!-- 侧边栏 -->
-      <div class="aside"></div>
+      <div class="aside">
+          
+      </div>
     </el-row>
   </div>
 </template>
