@@ -4,7 +4,7 @@
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <flightsFilters :data="FlightsList" @setAirport="setAirport" />
+        <flightsFilters :data="cacheFlightsData" @setAirport="setAirport" />
 
         <!-- 航班头部布局 -->
         <flightsListHead />
@@ -50,8 +50,12 @@ export default {
       },  
       pageIndex: 1, //当前页面
       pageSize: 5, //每页5条
-      total: 0 //一共多少条
-      //   setPageList:[]  //每一页显示的内容
+      total: 0, //一共多少条
+      cacheFlightsData:{
+        flights: [],
+        info: {},
+        options: {}
+      }  //每一页显示的内容,用于筛选备份（缓存）
     };
   },
   components: {
@@ -65,7 +69,7 @@ export default {
       method: "get",
       params: this.$route.query
     }).then(res => {
-      console.log(res);
+      // console.log(res);
       if (res.status === 200) {
         this.FlightsList = res.data;
         // console.log( this.FlightsList)// 这个是缓存的变量，一旦赋值之后不能被改
@@ -99,6 +103,9 @@ export default {
     // 处理选择机场的下拉菜单
     setAirport(value) {
         // console.log(value)//获取到点击的值
+        if(value){
+          this.FlightsList.flights = value
+        }
         
     }
   }
