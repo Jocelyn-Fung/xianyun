@@ -1,5 +1,5 @@
 // 1.用户管理 保存用户的userInfo
-export const state = () => ({
+export const state = () => ({   //返回一个对象，()=>{ return {}} 如果直接return可以写大括号代替
   //    采用接口返回的数据结构
   userInfo: {}
 })

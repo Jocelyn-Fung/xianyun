@@ -106,28 +106,34 @@ export default {
       // 选择航空公司时候触发
       handleCompany(value) {
         // console.log(value)
-        const Arr1 = this.data.flights.filter(v => {
+        const Arr = this.data.flights.filter(v => {
           // console.log(v.airline_name) //航空公司
           return value === v.airline_name;
         });
         // 触发父组件的修改setAirport的函数,子传父
         //  console.log(Arr1)
-        this.$emit("setAirport", Arr1);
+        this.$emit("setAirport", Arr);
       },
 
       // 选择机型时候触发
       handleAirSize(value) {
-        const Arr2 = this.data.flights.filter(v => {
+        const Arr = this.data.flights.filter(v => {
           // console.log(v.airline_name) //航空公司
           return value === v.plane_size;
         });
         // 触发父组件的修改setAirport的函数,子传父
         //  console.log(Arr1)
-        this.$emit("setAirport", Arr2);
+        this.$emit("setAirport", Arr);
       },
 
       // 撤销条件时候触发
-      handleFiltersCancel() {}
+      handleFiltersCancel() {
+        this.airport= "";
+        this.flightTimes=""; 
+        this.company="";
+        this.airSize="";
+        this.$emit("setAirport", this.data.flights);
+      }
     }
   }
 </script>
