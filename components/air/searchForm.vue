@@ -166,7 +166,7 @@ export default {
 
     // 目标城市下拉选择时触发
     handleDestSelect(item) {
-      this.form.departCode= item.sort
+      this.form.destCode= item.sort
     },
 
     // 确认选择日期时触发

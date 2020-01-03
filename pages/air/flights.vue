@@ -64,6 +64,7 @@ export default {
     flightsFilters
   },
   mounted() {
+    // console.log(this.$route.query)
     this.$axios({
       url: "/airs",
       method: "get",
