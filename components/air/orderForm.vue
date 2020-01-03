@@ -20,7 +20,7 @@
             </el-input>
           </el-form-item>
 
-          <span class="delete-user" @click="handleDeleteUser()">-</span>
+          <span class="delete-user" @click="handleDeleteUser(index)">-</span>
         </div>
       </el-form>
 
@@ -52,7 +52,7 @@
           <el-form-item label="手机">
             <el-input placeholder="请输入内容" v-model="contactPhone">
               <template slot="append">
-                <el-button @click="handleSendCaptcha">发送验证码</el-button>
+                <el-button @click="handleSendCaptcha()">发送验证码</el-button>
               </template>
             </el-input>
           </el-form-item>
@@ -98,18 +98,28 @@ export default {
   methods: {
     // 添加乘机人
     handleAddUsers() {
-      this.users.push({
+      this.users.push({  //为了避免在双向绑定的时候每个输入框的内容都受到第一个模板的影响，添加一个新对象进去
           username:'',
           id:''
       });
-      console.log(this.users);
     },
 
     // 移除乘机人
-    handleDeleteUser() {},
+    handleDeleteUser(index) {
+        this.users.splice(index,1)
+        //   console.log(this.users); /因为users本来就是个数组所以可以直接使用索引值删除
+    },
 
     // 发送手机验证码
-    handleSendCaptcha() {},
+    handleSendCaptcha() {
+        // console.log(this.contactPhone)获取到用户输入的手机号码，然后再调用store里面发送验证码的方法
+        if(!this.contactPhone) {
+            this.$message.error('请先填写手机号码')
+            return
+        }
+        this.$store.dispatch('user/sendCaptcha', this.contactPhone)
+        this.$message.success('手机验证码已经发送到您的手机！000000')
+    },
 
     // 提交订单
     handleSubmit() {

@@ -35,6 +35,7 @@ export default {
           }).then(res=>{
             //   console.log(res)
             this.form = res.data
+            //    console.log(this.form)
           })
     //   }
   },
