@@ -47,7 +47,7 @@ export default {
     var checkNickname = (rule, value, callback) => {
       let reg = /^[\u4e00-\u9fa5_a-zA-Z0-9_]{3,12}$/; //中英文数字等都可以
       if (reg.test(value)) {
-        document.querySelectorAll('.el-input__inner').style ='border:1px solid #67c23a'
+        document.querySelectorAll('input').style ='border:1px solid #67c23a'
         callback();
       } else if(value===''){
           callback('名字不能为空')

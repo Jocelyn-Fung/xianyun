@@ -8,7 +8,7 @@
 
       <!-- 侧边栏 -->
       <div class="aside">
-          
+          <orderAside :data='form'/>
       </div>
     </el-row>
   </div>
@@ -16,16 +16,20 @@
 
 <script>
 import orderForm from '@/components/air/orderForm'
+import orderAside from '@/components/air/orderAside'
 export default {
     data(){
         return{
           form:{
-              seat_infos:{}
+              seat_infos:{
+                seat_xid: this.$route.query.seat_xid
+              }
           }
         }
     },
     components:{
-        orderForm
+        orderForm,
+        orderAside
     },
      mounted(){
     //   console.log(this.$route.query)
@@ -33,11 +37,11 @@ export default {
           this.$axios({
               method:'get',
               url:'/airs/'+ this.$route.query.id,
-              params:this.$route.query.seat_id
+              params:this.$route.query.seat_xid
           }).then(res=>{
-            //   console.log(res)
+              // console.log('123',res)
             this.form = res.data
-            //    console.log(this.form)
+              //  console.log('22',this.form)
           })
     //   }
   },

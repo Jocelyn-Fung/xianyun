@@ -81,9 +81,9 @@ export default {
       contactName: "",
       contactPhone: "",
       captcha: "",
-      invoice: false,
-      seat_xid: "", // 座位的id
-      air: "" // 航班的id
+      invoice: false
+      // seat_xid: "", // 座位的id
+      // air: "" // 航班的id
     };
   },
   props: {
@@ -119,7 +119,7 @@ export default {
       } else {
         this.insurances.push(id);
       }
-       console.log(this.insurances);
+      //  console.log(this.insurances);
     },
 
     // 发送手机验证码
@@ -136,7 +136,33 @@ export default {
 
     // 提交订单
     handleSubmit() {
-      // console.log(this.data);
+     const allData ={
+            users:this.users,
+            insurances :this.insurances,
+            contactName : this.contactName,
+            contactPhone : this.contactPhone,
+            captcha : this.captcha,
+            invoice : false,
+            seat_xid : this.$route.query.seat_xid,
+            air : this.data.id,
+          } 
+      // console.log(allData);
+      // 获取保存到本地的token
+      let token = this.$store.state.user.userInfo.token
+      // console.log(this.$store.state.user.userInfo.token)
+      this.$axios({
+        method:'POST',
+        url:'/airorders',
+        headers:{
+          Authorization: 'Bearer ' + token
+        },
+        data:allData
+      }).then(res=>{
+        // console.log(res)
+        if(res.status===200){
+          this.$message.success('订单提交成功！正在生成订单，请稍等！')
+        }
+      })
     }
   }
 };
