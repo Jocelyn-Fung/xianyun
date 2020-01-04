@@ -102,22 +102,28 @@ export default {
         username: "",
         id: ""
       });
+      // console.log('添加', this.users)
+       this.$store.commit('air/addTicketUserInfo', this.users.length)
     },
 
     // 移除乘机人
     handleDeleteUser(index) {
       this.users.splice(index, 1);
       //   console.log(this.users); /因为users本来就是个数组所以可以直接使用索引值删除
+       this.$store.commit('air/addTicketUserInfo', this.users.length)
     },
-    // 保险 为什么点击不到？
+    // 保险
     handleInsurances(id) {
       // console.log(id)
       // 判断如果数组中已经有这个id了，说明用户已经点击过了，再一次的点击是取消的意思，应该从数组中清除
       let index = this.insurances.indexOf(id)
       if (index > -1) {
         this.insurances.splice(index, 1);
+        this.$store.commit('air/addInsurance',this.insurances.length)
+        // console.log('12311',this.data.insurances.length)
       } else {
         this.insurances.push(id);
+        this.$store.commit('air/addInsurance', this.insurances.length)
       }
       //  console.log(this.insurances);
     },
@@ -164,6 +170,9 @@ export default {
         }
       })
     }
+  },
+  mounted(){
+    
   }
 };
 </script>

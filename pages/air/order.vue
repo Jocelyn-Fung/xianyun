@@ -21,9 +21,7 @@ export default {
     data(){
         return{
           form:{
-              seat_infos:{
-                seat_xid: this.$route.query.seat_xid
-              }
+              // seat_infos:{ }
           }
         }
     },
@@ -33,7 +31,6 @@ export default {
     },
      mounted(){
     //   console.log(this.$route.query)
-    //   getTicketData(seat_id){
           this.$axios({
               method:'get',
               url:'/airs/'+ this.$route.query.id,
@@ -41,9 +38,7 @@ export default {
           }).then(res=>{
               // console.log('123',res)
             this.form = res.data
-              //  console.log('22',this.form)
           })
-    //   }
   },
 };
 </script>
