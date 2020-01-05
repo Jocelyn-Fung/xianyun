@@ -81,9 +81,8 @@ export default {
       contactName: "",
       contactPhone: "",
       captcha: "",
-      invoice: false
-      // seat_xid: "", // 座位的id
-      // air: "" // 航班的id
+      invoice: false,
+      commitData:{}
     };
   },
   props: {

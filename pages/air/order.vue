@@ -29,9 +29,16 @@ export default {
     orderForm,
     orderAside
   },
+  created() {
+    console.log(123);
+    this.$store.commit("air/addTicketUserInfo", 1);
+    console.log(this.$store.state.air.Ticketusers)
+    this.$store.commit("air/addInsurance", 1); 
+    console.log(this.$store.state.air.insurances)
+  },
   mounted() {
-    //   console.log(this.$route.query)
-    this.$axios({
+  //   //   console.log(this.$route.query)
+      this.$axios({
       method: "get",
       url: "/airs/" + this.$route.query.id,
       params: this.$route.query.seat_xid
@@ -41,7 +48,7 @@ export default {
     });
   },
 
-  // 使用destoryed，将数据进行清空, 跳转页面可以实现功能，但是刷新页面不行
+  // 使用destoryed，将数据进行重置, 跳转页面可以实现功能，但是刷新页面不会进入函数
   destroyed() {
     // console.log(222);
     this.$store.commit("air/addTicketUserInfo", 1);
