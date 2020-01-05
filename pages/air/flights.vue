@@ -27,6 +27,7 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
+        <flightsAside :getData="FlightsList" />
       </div>
     </el-row>
   </section>
@@ -39,6 +40,8 @@ import flightsListHead from "@/components/air/flightsListHead";
 import flightsItem from "@/components/air/flightsItem";
 // 3.引入过滤下拉框的子组件
 import flightsFilters from "@/components/air/flightsFilters";
+// 4.引入侧边栏子组件
+import flightsAside from "@/components/air/flightsAside";
 export default {
   data() {
     return {
@@ -47,21 +50,22 @@ export default {
         flights: [],
         info: {},
         options: {}
-      },  
+      },
       pageIndex: 1, //当前页面
       pageSize: 5, //每页5条
       total: 0, //一共多少条
-      cacheFlightsData:{
+      cacheFlightsData: {
         flights: [],
         info: {},
         options: {}
-      }  //每一页显示的内容,用于筛选备份（缓存）
+      } //每一页显示的内容,用于筛选备份（缓存）
     };
   },
   components: {
     flightsListHead,
     flightsItem,
-    flightsFilters
+    flightsFilters,
+    flightsAside
   },
   mounted() {
     // console.log(this.$route.query)
@@ -74,7 +78,7 @@ export default {
       if (res.status === 200) {
         this.FlightsList = res.data;
         // console.log( this.FlightsList)// 这个是缓存的变量，一旦赋值之后不能被改
-        this.cacheFlightsData = {...res.data};
+        this.cacheFlightsData = { ...res.data };
         this.total = res.data.total;
         // 点击页码或者是选择每页多少条数据的时候显示的列表
         // this.setList  = {...this.FlightsList}
@@ -103,11 +107,31 @@ export default {
     },
     // 处理选择机场的下拉菜单
     setAirport(value) {
-        // console.log(value)//获取到点击的值
-        if(value){
-          this.FlightsList.flights = value
+      // console.log(value)//获取到点击的值
+      if (value) {
+        this.FlightsList.flights = value;
+      }
+    }
+  },
+  watch: {
+    // 想要监听的属性，一旦发生变化就重新发送请求修改页面信息
+    $route() {
+      this.$axios({
+        url: "/airs",
+        method: "get",
+        params: this.$route.query
+      }).then(res => {
+        // console.log(res);
+        if (res.status === 200) {
+          this.FlightsList = res.data;
+          // console.log( this.FlightsList)// 这个是缓存的变量，一旦赋值之后不能被改
+          this.cacheFlightsData = { ...res.data };
+          this.total = res.data.total;
+          // 点击页码或者是选择每页多少条数据的时候显示的列表
+          // this.setList  = {...this.FlightsList}
+          //  console.log(this.setList)//所有的数据备份
         }
-        
+      });
     }
   }
 };

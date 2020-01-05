@@ -191,9 +191,10 @@ export default {
         path: "/air/flights",
 				query: this.form
       })
+      // console.log(this.form)
+      this.$store.commit('air/addHistory', this.form)
     }
-  },
-  mounted() {}
+  }
 };
 </script>
 
