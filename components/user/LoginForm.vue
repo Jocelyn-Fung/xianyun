@@ -63,7 +63,9 @@ export default {
           this.$store
             .dispatch("user/login", this.LoginForm)
             .then(res => {
+              //  console.log(1233435)
               if (res === true) {
+                // console.log(123)
                 this.$message.success("登录成功，返回上一个页面");
               }
             })

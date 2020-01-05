@@ -167,12 +167,15 @@ export default {
         // console.log(res)
         if(res.status===200){
           this.$message.success('订单提交成功！正在生成订单，请稍等！')
+          this.$router.push({
+            path:'/air/pay',
+            query: {
+              id: res.data.data.id
+            }
+          })
         }
       })
     }
-  },
-  mounted(){
-    
   }
 };
 </script>

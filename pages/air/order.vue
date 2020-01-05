@@ -3,43 +3,50 @@
     <el-row type="flex" justify="space-between">
       <!-- 订单表单 -->
       <div class="main">
-          <orderForm :data='form'/>
+        <orderForm :data="form" />
       </div>
 
       <!-- 侧边栏 -->
       <div class="aside">
-          <orderAside :data='form'/>
+        <orderAside :data="form" />
       </div>
     </el-row>
   </div>
 </template>
 
 <script>
-import orderForm from '@/components/air/orderForm'
-import orderAside from '@/components/air/orderAside'
+import orderForm from "@/components/air/orderForm";
+import orderAside from "@/components/air/orderAside";
 export default {
-    data(){
-        return{
-          form:{
-              // seat_infos:{ }
-          }
-        }
-    },
-    components:{
-        orderForm,
-        orderAside
-    },
-     mounted(){
-    //   console.log(this.$route.query)
-          this.$axios({
-              method:'get',
-              url:'/airs/'+ this.$route.query.id,
-              params:this.$route.query.seat_xid
-          }).then(res=>{
-              // console.log('123',res)
-            this.form = res.data
-          })
+  data() {
+    return {
+      form: {
+        // seat_infos:{ }
+      }
+    };
   },
+  components: {
+    orderForm,
+    orderAside
+  },
+  mounted() {
+    //   console.log(this.$route.query)
+    this.$axios({
+      method: "get",
+      url: "/airs/" + this.$route.query.id,
+      params: this.$route.query.seat_xid
+    }).then(res => {
+      // console.log('123',res)
+      this.form = res.data;
+    });
+  },
+
+  // 使用destoryed，将数据进行清空, 跳转页面可以实现功能，但是刷新页面不行
+  destroyed() {
+    // console.log(222);
+    this.$store.commit("air/addTicketUserInfo", 1);
+    this.$store.commit("air/addInsurance", 1);
+  }
 };
 </script>
 

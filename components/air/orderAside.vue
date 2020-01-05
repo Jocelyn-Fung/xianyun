@@ -73,9 +73,6 @@ export default {
              //返回的数据格式时 2时50分，所以需要拼接字符串，第一个是小时，第二个取余分钟
             }
         }
-    },
-    mounted(){
-        console.log('11123',this.$store.state.air.Ticketusers.length)
     }
 }
 </script>

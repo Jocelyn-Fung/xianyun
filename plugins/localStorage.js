@@ -1,7 +1,20 @@
 import createPersistedState from 'vuex-persistedstate'
 
+// export default ({store}) => {
+//   window.onNuxtReady(() => {
+//     createPersistedState({
+//       paths: [store.user] //这里读需要保持状态的文件夹进行设置
+//     })
+//     })(store)  
+// }
+
 export default ({store}) => {
   window.onNuxtReady(() => {
-    createPersistedState()(store.user)  //这里如果只写store就是对所有的store下面的文件夹都进行本地保存的设置
+    createPersistedState({
+        // paths: [store.user]
+        // reducer(){
+
+        // }
+    })(store)
   })
 }
