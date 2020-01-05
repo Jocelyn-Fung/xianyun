@@ -29,35 +29,38 @@ export default {
   data() {
     return {
       data: {},
-    //   定时器
+      //   定时器
       timer: false
     };
   },
-  methods:{
-      checkPay(){
+  methods: {
+    checkPay() {
       let token = this.$store.state.user.userInfo.token;
       let { id } = this.$route.query;
-       this.timer =  setInterval(()=>{
-              this.$axios({
-                  method:'post',
-                  url:'/airorders/checkpay',
-                  headers:{
-                      Authorization: "Bearer " + token
-                  },
-                  data:{
-                      id:id,
-                      nonce_str: this.data.price,
-                      out_trade_no:this.data.orderNo
-                  }
-              }).then(res=>{
-                //   console.log(res)
-                if(res.data.statusTxt !=='订单未支付'){
-                    this.$alert('订单支付成功！','提示：')
-                   window.clearInterval(this.timer);
-                }
-              })
-          },3000)
-      }
+      this.timer = setInterval(() => {
+        this.$axios({
+          method: "post",
+          url: "/airorders/checkpay",
+          headers: {
+            Authorization: "Bearer " + token
+          },
+          data: {
+            id: id,
+            nonce_str: this.data.price,
+            out_trade_no: this.data.orderNo
+          }
+        }).then(res => {
+          //   console.log(res)
+          if (res.data.statusTxt !== "订单未支付") {
+            this.$alert("订单支付成功！", "提示：");
+            window.clearInterval(this.timer);
+            this.$router.push({
+              path: "/"
+            });
+          }
+        });
+      }, 3000);
+    }
   },
   mounted() {
     setTimeout(() => {
@@ -75,18 +78,22 @@ export default {
         this.data = res.data[res.data.length - 1];
         let stage = document.getElementById("qrcode-stage");
         let payurl = this.data.payInfo.code_url;
-        QRCode.toDataURL(stage, payurl, function(err, url) {
-        //   console.log(url);
-          stage.style.cssText = "width:200px";
+        // 生成二维码
+        QRCode.toCanvas(stage, payurl, {
+          width: 200,
+          color: {
+            dark: "#010599FF",
+            light: "#FFBF60FF"
+          }
         });
-        this.checkPay()
+        this.checkPay();
       });
     }, 1);
   },
-   destroyed(){
-        // 组件卸载时候清除定时器
-        window.clearInterval(this.timer);
-    }
+  destroyed() {
+    // 组件卸载时候清除定时器
+    window.clearInterval(this.timer);
+  }
 };
 </script>
 

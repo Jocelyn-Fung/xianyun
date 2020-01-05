@@ -1,7 +1,7 @@
 export const state =()=>{
     return {
         Ticketusers:1,
-        insurances:1
+        insurances:0
     }
 }
 

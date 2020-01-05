@@ -30,30 +30,21 @@ export default {
     orderAside
   },
   created() {
-    console.log(123);
-    this.$store.commit("air/addTicketUserInfo", 1);
-    console.log(this.$store.state.air.Ticketusers)
-    this.$store.commit("air/addInsurance", 1); 
-    console.log(this.$store.state.air.insurances)
-  },
-  mounted() {
-  //   //   console.log(this.$route.query)
+    //   //   console.log(this.$route.query)
+    setTimeout(() => {
       this.$axios({
-      method: "get",
-      url: "/airs/" + this.$route.query.id,
-      params: this.$route.query.seat_xid
-    }).then(res => {
-      // console.log('123',res)
-      this.form = res.data;
-    });
+        method: "get",
+        url: "/airs/" + this.$route.query.id,
+        params: this.$route.query.seat_xid
+      }).then(res => {
+        // console.log('123',res)
+        this.form = res.data;
+      });
+      // 放在当前页面，刷新页面页一样重置
+      this.$store.commit("air/addTicketUserInfo", 1);
+      this.$store.commit("air/addInsurance", 0);
+    }, 1); 
   },
-
-  // 使用destoryed，将数据进行重置, 跳转页面可以实现功能，但是刷新页面不会进入函数
-  destroyed() {
-    // console.log(222);
-    this.$store.commit("air/addTicketUserInfo", 1);
-    this.$store.commit("air/addInsurance", 1);
-  }
 };
 </script>
 
