@@ -25,12 +25,12 @@ ul,ol,li{
   list-style: none;
 }
 a{
-  color:inherit;
+  // color:inherit;
   text-decoration: none;
 }
-a:hover{
-  color: inherit;
-}
+// a:hover{
+//   color: inherit;
+// }
 i,em{
   font-style: normal;
 }
