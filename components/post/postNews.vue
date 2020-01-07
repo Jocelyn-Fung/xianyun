@@ -2,7 +2,7 @@
   <div class="postNews">
     <!-- 输入框 -->
     <el-input placeholder="请输入想去的地方，比如：'广州'" v-model="searchPlace">
-      <el-button slot="append" icon="el-icon-search"></el-button>
+      <el-button slot="append" icon="el-icon-search" @click="searchPlaces"></el-button>
     </el-input>
     <!-- 推荐列表 -->
     <div class="suggest">
@@ -19,12 +19,14 @@
       </span>
     </div>
     <!--新闻内容 结构1-->
-    <div class="news" v-for="(item,index) in news.data" :key="index">
+    <div class="news" v-for="(item,index) in cacheNews.data" :key="'news-'+index">
+      <!-- 新闻图片，一张图 -->
       <div class="newsPic">
         <router-link to="#">
           <img :src="`${item.images[0]}`" alt />
         </router-link>
       </div>
+      <!-- 新闻的内容，一张图的时候显示的 -->
       <div class="newsBody">
         <h4 class="title">
           <a href="#">{{item.title}}</a>
@@ -32,6 +34,7 @@
         <div class="content">
           <a href="#">{{item.summary}}</a>
         </div>
+        <!-- 发帖的用户信息 -->
         <div class="userInfo">
           <div class="leftSide">
             <span class="el-icon-location-information">{{item.cityName}}</span>
@@ -55,41 +58,75 @@
       </div>
     </div>
     <!-- 新闻内容 结构2 -->
-    <div class="news2" v-for="(item,index) in news.data" :key="index">
+    <div class="news2" v-for="(item,index) in cacheNews.data" :key="'news2-'+index">
       <p class="title">
         <a href="#">{{item.title}}</a>
       </p>
       <div class="newsBody">
         <a href="#">
           <div class="content">{{item.summary}}</div>
-          <div class="newsPics">
-            <img :src="`${item.images[0]}`" alt />
-            <img :src="`${item.images[1]}`" alt />
-            <img :src="`${item.images[2]}`" alt />
+          <!-- 图片的显示 -->
+          <div class="newsPics active" v-show="item.images.length===3">
+            <img
+              class="img1"
+              v-for="(item1,index) in item.images"
+              :key="'img1-'+index"
+              :src="`${item1}`"
+              alt
+            />
+          </div>
+          <div class="newsPics" v-show="item.images.length===2 || item.images.length===1">
+            <img
+              class="img2"
+              v-for="(item1,index) in item.images"
+              :key="'img2-'+index"
+              :src="`${item1}`"
+              alt
+            />
+          </div>
+          <div class="newsPics hide" v-show="item.images.length===4">
+            <img
+              class="img3"
+              v-for="(item1,index) in item.images"
+              :key="'img3-'+index"
+              :src="`${item1}`"
+              alt
+            />
           </div>
         </a>
+        <!-- 发帖的用户信息 -->
         <div class="userInfo">
           <div class="leftSide">
-            <span class="el-icon-location-information">广州市</span>
+            <span class="el-icon-location-information">{{item.cityName}}</span>
             <span>
               by&nbsp;
               <img
-                src="http://p1-q.mafengwo.net/s11/M00/B4/92/wKgBEFt6ZqaAJeK7AAbj58wpNlY06.jpeg?imageView2%2F2%2Fw%2F1360%2Fq%2F90"
+                :src="$store.state.post.baseURL + `${item.account.defaultAvatar}`"
                 alt
                 class="emoji"
               />
               <a href="#">
-                <em>地球发动机,图片是头像</em>
+                <em>{{item.account.nickname}}</em>
               </a>
             </span>
-            <span class="el-icon-view">&nbsp;&nbsp;622</span>
+            <span class="el-icon-view">&nbsp;&nbsp;{{item.watch}}</span>
           </div>
           <div class="rightSide">
-            <em>10</em> 赞
+            <em>{{item.like}}</em> 赞
           </div>
         </div>
       </div>
     </div>
+    <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pageIndex"
+      :page-sizes="[3, 5, 10, 15]"
+      :page-size="3"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="100"
+    ></el-pagination>
   </div>
 </template>
 
@@ -98,7 +135,11 @@ export default {
   data() {
     return {
       searchPlace: "",
-      news: {}
+      news: {}, //所有的数据
+      cacheNews:{}, // 设置一个空对象用于缓存修改
+      pageIndex: 1, //当前页
+      pageSize: 3, //每页3条
+      total: 100 //总页数
     };
   },
   mounted() {
@@ -108,8 +149,36 @@ export default {
       console.log(res);
       if (res.status === 200) {
         this.news = res.data;
+        this.cacheNews = {...res.data}
+        // console.log(this.news);
       }
     });
+    this.$store.commit("post/SetBaseURL", "http://localhost:1337");
+  },
+  methods: {
+    // 1.点击搜索按钮
+    searchPlaces() {
+      // console.log(this.searchPlace.split("市")[0]) //获取到用户输入的城市
+      // 循环过滤数组判断城市相同的文章进行显示
+      const Arr = this.news.data.filter(v=>{
+         return this.searchPlace === v.cityName.split('市')[0]
+      })
+      // console.log(Arr) 获取符合条件的数组,将它赋值
+      this.cacheNews.data = Arr
+      console.log(this.cacheNews.data)
+      console.log(this.news.data)
+    },
+
+
+
+    handleSizeChange(val) {
+      // console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+    },
+    handleCurrentChange(val) {
+      // console.log(`当前页: ${val}`);
+      this.pageIndex = val;
+    }
   }
 };
 </script>
@@ -227,7 +296,7 @@ export default {
       font-size: 14px;
       .content {
         line-height: 20px;
-        height:60px ;
+        height: 60px;
         text-overflow: ellipsis;
         display: -webkit-box;
         -webkit-line-clamp: 3; /*超出3行部分显示省略号，去掉该属性 显示全部*/
@@ -235,11 +304,10 @@ export default {
         overflow: hidden;
       }
       .newsPics {
-        display: flex;
         justify-content: space-between;
         margin: 20px 0;
         img {
-          width: 30%;
+          width: 32%;
           margin-right: 15px;
           height: 140px;
           &:last-child {
@@ -247,7 +315,20 @@ export default {
           }
         }
       }
+      .active {
+        display: flex;
+      }
+      .hide {
+        display: flex;
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow: hidden;
+      }
     }
   }
+}
+// 分页
+.el-pagination {
+  padding-top: 15px;
 }
 </style>
