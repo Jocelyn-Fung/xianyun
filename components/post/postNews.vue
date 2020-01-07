@@ -6,10 +6,8 @@
     </el-input>
     <!-- 推荐列表 -->
     <div class="suggest">
-      推荐：
-      <span>广州</span>
-      <span>上海</span>
-      <span>北京</span>
+      <span @click="recover()">推荐：</span>
+      <span @click="filter(item)" v-for="(item,index) in places" :key="index">{{item}}</span>
     </div>
     <!-- 推荐攻略 -->
     <div class="suggestIdeas">
@@ -125,7 +123,7 @@
       :page-sizes="[3, 5, 10, 15]"
       :page-size="3"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="100"
+      :total="total"
     ></el-pagination>
   </div>
 </template>
@@ -136,48 +134,71 @@ export default {
     return {
       searchPlace: "",
       news: {}, //所有的数据
-      cacheNews:{}, // 设置一个空对象用于缓存修改
+      cacheNews: {}, // 设置一个空对象用于缓存修改
       pageIndex: 1, //当前页
       pageSize: 3, //每页3条
-      total: 100 //总页数
+      total: 1, //总页数
+      places: ["广州", "上海", "北京"]
     };
   },
   mounted() {
-    this.$axios({
-      url: "/posts"
-    }).then(res => {
-      console.log(res);
-      if (res.status === 200) {
-        this.news = res.data;
-        this.cacheNews = {...res.data}
-        // console.log(this.news);
-      }
-    });
+    this.recover();
     this.$store.commit("post/SetBaseURL", "http://localhost:1337");
   },
   methods: {
     // 1.点击搜索按钮
     searchPlaces() {
+      if (this.searchPlace === "") {
+        this.$message.error("搜索内容不能为空");
+        return;
+      }
       // console.log(this.searchPlace.split("市")[0]) //获取到用户输入的城市
       // 循环过滤数组判断城市相同的文章进行显示
-      const Arr = this.news.data.filter(v=>{
-         return this.searchPlace === v.cityName.split('市')[0]
-      })
+      const Arr = this.news.data.filter(v => {
+        return this.searchPlace === v.cityName.split("市")[0];
+      });
       // console.log(Arr) 获取符合条件的数组,将它赋值
-      this.cacheNews.data = Arr
-      console.log(this.cacheNews.data)
-      console.log(this.news.data)
+      this.cacheNews.data = Arr;
+      // console.log(this.cacheNews.data)
+      // console.log(this.news.data)
     },
-
-
-
+    // 当点击推荐的广州，上海，北京地区
+    filter(item) {
+      const Arr = this.news.data.filter(v => {
+        return item === v.cityName.split("市")[0];
+      });
+      this.cacheNews.data = Arr;
+    },
+    // 请求封装, // 当点击推荐的时候，恢复数据
+    recover() {
+      this.$axios({
+        url: "/posts"
+      }).then(res => {
+        if (res.status === 200) {
+          this.news = res.data;
+          this.cacheNews = { ...res.data };
+          this.total = res.data.total;
+        }
+      });
+    },
+    //点击每页几条的时候变化数据
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
       this.pageSize = val;
+      this.pageIndex = 1;
     },
+    // 点击第几页的时候跳转
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
       this.pageIndex = val;
+    }
+  },
+  // 监听页码的变化，显示数据 存在问题
+  computed: {
+    setPageList() {
+      const start = (this.pageIndex - 1) * this.pageSize;
+      const end = this.pageSize * this.pageSize;
+      return this.news.data.slice(start, end);
     }
   }
 };
@@ -221,6 +242,7 @@ export default {
 }
 // 推荐列表
 .suggest {
+  cursor: pointer;
   font-size: 12px;
   padding: 10px 0;
   span {
