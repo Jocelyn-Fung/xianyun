@@ -13,85 +13,54 @@
     <div class="suggestIdeas">
       <span class="ideas">推荐攻略</span>
       <span>
-        <el-button type="primary" icon="el-icon-edit">写游记</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          @click="$router.push({path:'/post/create'})"
+        >写游记</el-button>
       </span>
     </div>
     <!--新闻内容 结构1-->
-    <div class="news" v-for="(item,index) in cacheNews.data" :key="'news-'+index">
-      <!-- 新闻图片，一张图 -->
-      <div class="newsPic">
-        <router-link to="#">
-          <img :src="`${item.images[0]}`" alt />
-        </router-link>
-      </div>
-      <!-- 新闻的内容，一张图的时候显示的 -->
-      <div class="newsBody">
-        <h4 class="title">
-          <a href="#">{{item.title}}</a>
-        </h4>
-        <div class="content">
-          <a href="#">{{item.summary}}</a>
-        </div>
-        <!-- 发帖的用户信息 -->
-        <div class="userInfo">
-          <div class="leftSide">
-            <span class="el-icon-location-information">{{item.cityName}}</span>
-            <span>
-              by&nbsp;
-              <img
-                :src=" `http://localhost:1337` + `${item.account.defaultAvatar}`"
-                alt
-                class="emoji"
-              />
-              <a href="#">
-                <em>{{item.account.nickname}}</em>
-              </a>
-            </span>
-            <span class="el-icon-view">&nbsp;&nbsp;{{item.watch}}</span>
-          </div>
-          <div class="rightSide">
-            <em>{{item.like}}</em> 赞
-          </div>
-        </div>
-      </div>
-    </div>
+
     <!-- 新闻内容 结构2 -->
-    <div class="news2" v-for="(item,index) in cacheNews.data" :key="'news2-'+index">
-      <p class="title">
-        <a href="#">{{item.title}}</a>
-      </p>
-      <div class="newsBody">
-        <a href="#">
-          <div class="content">{{item.summary}}</div>
-          <!-- 图片的显示 -->
-          <div class="newsPics active" v-show="item.images.length===3">
-            <img
-              class="img1"
-              v-for="(item1,index) in item.images"
-              :key="'img1-'+index"
-              :src="`${item1}`"
-              alt
-            />
-          </div>
-          <div class="newsPics" v-show="item.images.length===2 || item.images.length===1">
-            <img
-              class="img2"
-              v-for="(item1,index) in item.images"
-              :key="'img2-'+index"
-              :src="`${item1}`"
-              alt
-            />
-          </div>
-          <div class="newsPics hide" v-show="item.images.length===4">
-            <img
-              class="img3"
-              v-for="(item1,index) in item.images"
-              :key="'img3-'+index"
-              :src="`${item1}`"
-              alt
-            />
-          </div>
-        </a>
+    <div class="news" v-for="(item,index) in cacheNews.data" :key="'news2-'+index">
+      <div class="structor1" v-if="item.images.length>=2">
+        <p class="title">
+          <a href="#">{{item.title}}</a>
+        </p>
+        <div class="newsBody">
+          <a href="#">
+            <div class="content">{{item.summary}}</div>
+            <!-- 图片的显示 -->
+            <div class="newsPics active" v-show="item.images.length===3">
+              <img
+                class="img1"
+                v-for="(item1,index) in item.images"
+                :key="'img1-'+index"
+                :src="`${item1}`"
+                alt
+              />
+            </div>
+            <div class="newsPics" v-show="item.images.length===2">
+              <img
+                class="img2"
+                v-for="(item1,index) in item.images"
+                :key="'img2-'+index"
+                :src="`${item1}`"
+                alt
+              />
+            </div>
+            <div class="newsPics hide" v-show="item.images.length===4">
+              <img
+                class="img3"
+                v-for="(item1,index) in item.images"
+                :key="'img3-'+index"
+                :src="`${item1}`"
+                alt
+              />
+            </div>
+          </a>
+        </div>
         <!-- 发帖的用户信息 -->
         <div class="userInfo">
           <div class="leftSide">
@@ -111,6 +80,42 @@
           </div>
           <div class="rightSide">
             <em>{{item.like}}</em> 赞
+          </div>
+        </div>
+      </div>
+      <div class="structor2" v-if="item.images.length<2">
+        <div class="newsPic">
+          <router-link to="#">
+            <img :src="`${item.images[0]}`" alt />
+          </router-link>
+        </div>
+        <div class="newsBody">
+          <h4 class="title">
+            <a href="#">{{item.title}}</a>
+          </h4>
+          <div class="content">
+            <a href="#">{{item.summary}}</a>
+          </div>
+          <!-- 发帖的用户信息 -->
+          <div class="userInfo">
+            <div class="leftSide">
+              <span class="el-icon-location-information">{{item.cityName}}</span>
+              <span>
+                by&nbsp;
+                <img
+                  :src="$store.state.post.baseURL + `${item.account.defaultAvatar}`"
+                  alt
+                  class="emoji"
+                />
+                <a href="#">
+                  <em>{{item.account.nickname}}</em>
+                </a>
+              </span>
+              <span class="el-icon-view">&nbsp;&nbsp;{{item.watch}}</span>
+            </div>
+            <div class="rightSide">
+              <em>{{item.like}}</em> 赞
+            </div>
           </div>
         </div>
       </div>
@@ -138,7 +143,8 @@ export default {
       pageIndex: 1, //当前页
       pageSize: 3, //每页3条
       total: 1, //总页数
-      places: ["广州", "上海", "北京"]
+      places: ["广州", "上海", "北京"],
+      arrLength: [] //将每条新闻中照片的数量保存起来
     };
   },
   mounted() {
@@ -178,6 +184,11 @@ export default {
           this.news = res.data;
           this.cacheNews = { ...res.data };
           this.total = res.data.total;
+          this.$store.commit("post/ToRequest", res.data);
+          this.cacheNews.data.forEach(element => {
+            // console.log(element.images.length)
+            this.arrLength = element.images.length;
+          });
         }
       });
     },
@@ -262,10 +273,8 @@ export default {
   }
 }
 // 新闻内容结构1---1张图
-.news {
+.structor2 {
   display: flex;
-  padding: 15px 0;
-  border-bottom: 1px solid #ccc;
   .newsPic {
     flex: 30%;
     img {
@@ -302,7 +311,7 @@ export default {
   }
 }
 // 新闻结构2---3张图
-.news2 {
+.news {
   border-bottom: 1px solid #ccc;
   padding: 15px 0;
   .title {
