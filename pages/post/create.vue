@@ -3,37 +3,27 @@
     <div class="main">
       <p class="title">发表新攻略</p>
       <p class="share">分享你的个人游记，让更多人看到哦！</p>
-      <el-input v-model="input" placeholder="请输入标题"></el-input>
+      <el-input v-model="form.title" placeholder="请输入标题"></el-input>
       <!-- 富文本框 -->
       <div id="app">
-        <VueEditor :config="config" />
+        <VueEditor :config="config" ref="vueEditor" />
       </div>
       <!-- 选择城市 -->
       <div class="chooseCity">
+        <!-- autocomplete自动补全，-->
         <span>选择城市</span>
-        <el-select
-          v-model="value"
-          multiple
-          filterable
-          remote
-          reserve-keyword
-          placeholder="请输入关键词"
-          :remote-method="remoteMethod"
-          :loading="loading"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </div>
+        <el-autocomplete
+          v-model="cityName"
+          :fetch-suggestions="querySearchAsync"
+          placeholder="请搜索游玩城市"
+          @select="handleSelect" 
+        ></el-autocomplete>
+      </div> 
       <!-- 发布或者保存到草稿 -->
       <div class="publish">
-        <el-button type="primary">发布</el-button>
+        <el-button type="primary" @click="publish">发布</el-button>
         <span class="or">或者</span>
-        <span class="sketch">保存到草稿</span>
+        <span class="sketch" @click="saveToSektchBox">保存到草稿</span>
       </div>
     </div>
     <!-- 右边草稿箱 -->
@@ -60,7 +50,15 @@ export default {
   name: "app",
   data() {
     return {
-      input: "",
+      // 远程搜索
+      cities: [], //用户输入关键词后获取的数据
+      cityName:'',//用户填入搜索的城市,
+      // 新增文章发送请求需要的参数
+      form:{
+         title: "", // 输入框的内容,文章标题
+         city:0, //用户填入搜索的城市id
+         content:'', //获取到标签的内容
+      },
       // 富文本编辑器
       config: {
         // 上传图片的配置
@@ -81,87 +79,73 @@ export default {
             insert("http://localhost:3000" + res.data.url);
           }
         }
-      },
-      // 远程搜索
-      options: [],
-      value: [],
-      list: [],
-      loading: false,
-      states: [
-        "Alabama",
-        "Alaska",
-        "Arizona",
-        "Arkansas",
-        "California",
-        "Colorado",
-        "Connecticut",
-        "Delaware",
-        "Florida",
-        "Georgia",
-        "Hawaii",
-        "Idaho",
-        "Illinois",
-        "Indiana",
-        "Iowa",
-        "Kansas",
-        "Kentucky",
-        "Louisiana",
-        "Maine",
-        "Maryland",
-        "Massachusetts",
-        "Michigan",
-        "Minnesota",
-        "Mississippi",
-        "Missouri",
-        "Montana",
-        "Nebraska",
-        "Nevada",
-        "New Hampshire",
-        "New Jersey",
-        "New Mexico",
-        "New York",
-        "North Carolina",
-        "North Dakota",
-        "Ohio",
-        "Oklahoma",
-        "Oregon",
-        "Pennsylvania",
-        "Rhode Island",
-        "South Carolina",
-        "South Dakota",
-        "Tennessee",
-        "Texas",
-        "Utah",
-        "Vermont",
-        "Virginia",
-        "Washington",
-        "West Virginia",
-        "Wisconsin",
-        "Wyoming"
-      ]
+      }
     };
   },
   components: {
     VueEditor
   },
-  mounted() {
-    this.list = this.states.map(item => {
-      return { value: `value:${item}`, label: `label:${item}` };
-    });
-  },
   methods: {
-    remoteMethod(query) {
-      if (query !== "") {
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.options = this.list.filter(item => {
-            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
-          });
-        }, 200);
-      } else {
-        this.options = [];
+    // 发布文章
+    publish() {
+     this.form.content = this.$refs.vueEditor.editor.root.innerHTML
+     let token = this.$store.state.user.userInfo.token
+    //  console.log(this.form)
+     this.$axios({
+       method:'post',
+       url:'/posts',
+         headers:{
+          Authorization: 'Bearer ' + token
+        },
+       data: this.form
+     }).then(res=>{
+      //  console.log(res)
+      if(res.data.status===200){
+        this.$message.success(this.data.message)
       }
+     })
+    },
+    //保存到草稿箱
+    saveToSektchBox() {
+      // var content = this.$refs.vueEditor.editor.root.innerHTML; //获取到标签的内容
+      // console.log(this.input); //获取到标题内容
+      // console.log(quill);
+      // console.log(this.state)  //获取到用户输入的游玩城市
+    }, 
+    //
+    //  用户输入游玩城市输入框获得焦点时触发,
+    // queryString 是选中的值，cb是回调函数，接收要展示的列表
+    querySearchAsync(value, cb) {
+      //  console.log(queryString) 用户输入的内容
+      if(value.trim() === ''){
+        cb([])
+        return;
+      }
+      this.$axios({
+        url: "/airs/city",
+        params: {
+          name: value
+        }
+      }).then(res => {
+        if (res.status === 200) {
+          // console.log(res.data) 根据关键字获取远程数据
+          const {data} = res.data
+          this.cities = data.map(v=>{
+             v.value = v.name
+             return v;
+          })
+          // console.log(this.form.cities)
+           cb(this.cities)
+        }
+      });
+      
+    },
+    // 此函数用于获取到用户选择的游玩城市,
+    handleSelect(item) {
+      // console.log(item.name);
+      // console.log(item)
+      this.cityName = item.name
+      this.form.city = item.id
     }
   }
 };
@@ -195,17 +179,17 @@ export default {
       border: 1px solid #ccc;
       font-size: 15px;
       // padding: 0px 30px 20px 0px;
-      padding-left:10px;
+      padding-left: 10px;
       padding-bottom: 30px;
       width: 180px;
       margin-left: 50px;
-      .sketch{
-        padding:15px 0px;
+      .sketch {
+        padding: 15px 0px;
       }
-      .sketchList{
+      .sketchList {
         font-size: 14px;
-        .sketchDate{
-          color:#999;
+        .sketchDate {
+          color: #999;
         }
       }
     }

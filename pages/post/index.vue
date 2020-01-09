@@ -154,7 +154,7 @@ export default {
   },
   data() {
     return {
-      searchPlace: "", //点击搜索
+      searchPlace: "", //搜索框的内容
       news: {}, //所有的数据
       cacheNews: {}, // 设置一个空对象用于缓存修改
       pageIndex: 1, //当前页
@@ -213,6 +213,7 @@ export default {
     Tofilter(item) {
       // console.log(item);
       this.filter(item);
+      this.searchPlace = item
     },
     //点击每页几条的时候变化数据
     handleSizeChange(val) {

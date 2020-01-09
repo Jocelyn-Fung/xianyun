@@ -86,7 +86,6 @@ export default {
       // 输入关键字的时候，下拉框显示的到达城市数组集合
       destCities: [],
       state: "",
-      timeout: null
     };
   },
   methods: {
