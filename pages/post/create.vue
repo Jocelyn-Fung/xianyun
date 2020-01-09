@@ -106,10 +106,10 @@ export default {
         //  console.log(res)
         if (res.data.status === 0) {
           this.$message.success('新增成功！');
-          // this.cityName='',
-          // this.form.city='',
-          // this.form.title='',
-          // this.form.content=''
+          this.cityName='',
+          this.form.city='',
+          this.form.title='',
+          this.form.content='' //此处的内容清空不了
         }
       });
     },

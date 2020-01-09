@@ -165,7 +165,7 @@ export default {
       arrLength: [] //将每条新闻中照片的数量保存起来
     };
   },
-  mounted() {
+  created() {
     this.recover();
     this.$store.commit("post/SetBaseURL", "http://localhost:1337");
   },
@@ -221,7 +221,7 @@ export default {
       // console.log(`每页 ${val} 条`);
       this.pageSize = val;
       this.pageIndex = 1;
-      this.recover()
+      // this.recover()
     },
     // 点击第几页的时候跳转
     handleCurrentChange(val) {
@@ -233,7 +233,8 @@ export default {
   // 监听页码的变化
   computed:{
     rankPage(){
-
+     const start = (this.pageIndex-1)*this.pageSize
+     const end = this.pageIndex*this.pageSize
     }
   }
 };

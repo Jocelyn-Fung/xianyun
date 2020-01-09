@@ -10,9 +10,11 @@
       >
         <span>{{item.type}}</span>
         <ul class="detail" v-show="currentIndex===index">
-          <li class="children" 
-          v-for="(item,index) in item.children" :key="index"
-          @click="jump(item.city)"
+          <li
+            class="children"
+            v-for="(item,index) in item.children"
+            :key="index"
+            @click="jump(item.city)"
           >
             <em>{{index+1}}</em>
             <span class="city">{{item.city}}</span>
@@ -21,6 +23,7 @@
         </ul>
       </li>
     </ul>
+    <span class="line" v-show="isshow"></span>
     <p class="suggestCity">推荐城市</p>
     <a href="#">
       <img src="@/assets/images/01.pic_sea.jpg" alt />
@@ -35,21 +38,25 @@ export default {
       // 当前被点击的那一项
       currentIndex: "",
       getData: [],
-      cityItem:''
+      cityItem: "",
+      isshow:false
     };
   },
   methods: {
     show(index) {
       this.currentIndex = index;
+      this.isshow = true;
     },
     hide(index1) {
       this.currentIndex = "";
+      // this.currentIndex = index1;
+      this.isshow = false
     },
     //  点击筛选
     jump(item) {
-      this.cityItem = item
+      this.cityItem = item;
       // console.log(this.cityItem)
-      this.$emit('Tofilter',this.cityItem)
+      this.$emit("Tofilter", this.cityItem);
     }
   },
   mounted() {
@@ -75,7 +82,7 @@ export default {
 
     border: 1px solid #ccc;
     border-bottom: none;
-    line-height: 45px;
+    line-height: 43px;
     padding: 0 20px;
     box-sizing: border-box;
     cursor: pointer;
@@ -91,6 +98,16 @@ export default {
       //  width: 270px;
       border-right: 1px solid #fff;
     }
+    .children {
+      border-left: none;
+    }
+  }
+  .line {
+    border-left: 1px solid #ccc;
+    height: 43px;
+    position: absolute;
+    top: 174px;
+    right: 0px;
   }
   .menu .title::after {
     content: "";
@@ -110,6 +127,7 @@ export default {
     top: 0px;
     right: -341px;
     border: 1px solid #ccc;
+    border-left: none;
     background-color: #fff;
     li {
       padding-left: 20px;
@@ -117,8 +135,9 @@ export default {
     }
   }
   .children {
-    line-height: 43px;
+    line-height: 42px;
     background-color: #fff;
+    border-left: 1px solid #ccc;
     em {
       font-style: italic;
       color: #ffa500;
