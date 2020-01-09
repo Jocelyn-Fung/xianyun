@@ -10,10 +10,13 @@
       >
         <span>{{item.type}}</span>
         <ul class="detail" v-show="currentIndex===index">
-          <li class="children" v-for="(item,index) in item.children" :key="index" @click="jump(item.city)">
+          <li class="children" 
+          v-for="(item,index) in item.children" :key="index"
+          @click="jump(item.city)"
+          >
             <em>{{index+1}}</em>
-            <span href="#" class="city">{{item.city}}</span>
-            <span href="#" class="desc">{{item.desc}}</span>
+            <span class="city">{{item.city}}</span>
+            <span class="desc">{{item.desc}}</span>
           </li>
         </ul>
       </li>
@@ -31,7 +34,8 @@ export default {
     return {
       // 当前被点击的那一项
       currentIndex: "",
-      getData: []
+      getData: [],
+      cityItem:''
     };
   },
   methods: {
@@ -43,14 +47,9 @@ export default {
     },
     //  点击筛选
     jump(item) {
-      const Arr = this.$store.state.post.cacheNews.data.filter(v => {
-        return item === v.cityName.split("市")[0];
-      });
-      // this.$store.state.post.cacheNews.data = Arr;
-      console.log(Arr)
-      // this.$store.commit('post/ToRequest',Arr) 如何能够继续保证数组的个数
-    // console.log(item)
-    // console.log(this.$store.state.post.news)
+      this.cityItem = item
+      // console.log(this.cityItem)
+      this.$emit('Tofilter',this.cityItem)
     }
   },
   mounted() {

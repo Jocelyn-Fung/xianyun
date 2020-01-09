@@ -2,8 +2,8 @@
 export const state = () => {
   return {
     baseURL: '',
-    news: {},
-    cacheNews:{}
+    // news: {},
+    // cacheNews:{}
   }
 }
 
@@ -12,10 +12,10 @@ export const mutations = {
     state.baseURL = data
   },
   // 将请求回来的数据保存到state中
-  ToRequest(state, data) {
-    state.news = data
-    state.cacheNews ={...data}
-  }
+  // ToRequest(state, data) {
+  //   state.news = data
+  //   state.cacheNews ={...data}
+  // }
 }
 // // 异步请求 将请求封装到本地
 // export const actions = {
