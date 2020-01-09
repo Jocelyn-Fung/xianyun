@@ -139,6 +139,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         ></el-pagination>
+        <span>{{rankPage}}</span>
       </div>
     </div>
   </div>
@@ -229,8 +230,11 @@ export default {
       // this.recover()
     }
   },
+  // 监听页码的变化
   computed:{
-    
+    rankPage(){
+
+    }
   }
 };
 </script>
@@ -242,7 +246,7 @@ export default {
   margin: 20px auto;
   // height:500px;
   .left {
-    flex: 28%;
+    flex: 270px;
     // border: 1px solid red;
     margin-right: 40px;
     position: relative;
@@ -250,7 +254,7 @@ export default {
   }
   // 右边主要内容
   .main {
-    flex: 72%;
+    width: 720px;
     z-index: 1;
   }
 }

@@ -16,9 +16,9 @@
           v-model="cityName"
           :fetch-suggestions="querySearchAsync"
           placeholder="请搜索游玩城市"
-          @select="handleSelect" 
+          @select="handleSelect"
         ></el-autocomplete>
-      </div> 
+      </div>
       <!-- 发布或者保存到草稿 -->
       <div class="publish">
         <el-button type="primary" @click="publish">发布</el-button>
@@ -52,31 +52,31 @@ export default {
     return {
       // 远程搜索
       cities: [], //用户输入关键词后获取的数据
-      cityName:'',//用户填入搜索的城市,
+      cityName: "", //用户填入搜索的城市,
       // 新增文章发送请求需要的参数
-      form:{
-         title: "", // 输入框的内容,文章标题
-         city:0, //用户填入搜索的城市id
-         content:'', //获取到标签的内容
+      form: {
+        title: "", // 输入框的内容,文章标题
+        city: 0, //用户填入搜索的城市id
+        content: "" //获取到标签的内容
       },
       // 富文本编辑器
       config: {
         // 上传图片的配置
         uploadImage: {
-          url: "http://localhost:3000/upload",
+          // url:this.$tore.state.post.baseURL,
           name: "file",
           // res是结果，insert方法会把内容注入到编辑器中，res.data.url是资源地址
           uploadSuccess(res, insert) {
-            insert("http://localhost:3000" + res.data.url);
+            // insert(this.$tore.state.post.baseURL + res.data.url);
           }
         },
 
         // 上传视频的配置
         uploadVideo: {
-          url: "http://localhost:3000/upload",
+          // url: this.$tore.state.post.baseURL,
           name: "file",
           uploadSuccess(res, insert) {
-            insert("http://localhost:3000" + res.data.url);
+            // insert(this.$tore.state.post.baseURL + res.data.url);
           }
         }
       }
@@ -88,22 +88,30 @@ export default {
   methods: {
     // 发布文章
     publish() {
-     this.form.content = this.$refs.vueEditor.editor.root.innerHTML
-     let token = this.$store.state.user.userInfo.token
-    //  console.log(this.form)
-     this.$axios({
-       method:'post',
-       url:'/posts',
-         headers:{
-          Authorization: 'Bearer ' + token
-        },
-       data: this.form
-     }).then(res=>{
-      //  console.log(res)
-      if(res.data.status===200){
-        this.$message.success(this.data.message)
+      this.form.content = this.$refs.vueEditor.editor.root.innerHTML;
+      let token = this.$store.state.user.userInfo.token;
+      //  console.log(this.form)
+      if(this.form===""){
+        this.$message.error('说点什么再发布吧！')
+        return
       }
-     })
+      this.$axios({
+        method: "post",
+        url: "/posts",
+        headers: {
+          Authorization: "Bearer " + token
+        },
+        data: this.form
+      }).then(res => {
+        //  console.log(res)
+        if (res.data.status === 0) {
+          this.$message.success('新增成功！');
+          // this.cityName='',
+          // this.form.city='',
+          // this.form.title='',
+          // this.form.content=''
+        }
+      });
     },
     //保存到草稿箱
     saveToSektchBox() {
@@ -111,14 +119,14 @@ export default {
       // console.log(this.input); //获取到标题内容
       // console.log(quill);
       // console.log(this.state)  //获取到用户输入的游玩城市
-    }, 
+    },
     //
     //  用户输入游玩城市输入框获得焦点时触发,
     // queryString 是选中的值，cb是回调函数，接收要展示的列表
     querySearchAsync(value, cb) {
       //  console.log(queryString) 用户输入的内容
-      if(value.trim() === ''){
-        cb([])
+      if (value.trim() === "") {
+        cb([]);
         return;
       }
       this.$axios({
@@ -129,24 +137,27 @@ export default {
       }).then(res => {
         if (res.status === 200) {
           // console.log(res.data) 根据关键字获取远程数据
-          const {data} = res.data
-          this.cities = data.map(v=>{
-             v.value = v.name
-             return v;
-          })
+          const { data } = res.data;
+          this.cities = data.map(v => {
+            v.value = v.name;
+            return v;
+          });
           // console.log(this.form.cities)
-           cb(this.cities)
+          cb(this.cities);
         }
       });
-      
     },
     // 此函数用于获取到用户选择的游玩城市,
     handleSelect(item) {
       // console.log(item.name);
       // console.log(item)
-      this.cityName = item.name
-      this.form.city = item.id
-    }
+      this.cityName = item.name;
+      this.form.city = item.id;
+    },
+    // 上传图片和上传视频的配置
+    // uploadBefore(){
+    //       console.log(file)
+    // }
   }
 };
 </script>
