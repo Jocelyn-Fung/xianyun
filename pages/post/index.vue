@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 左侧菜单 -->
     <div class="left">
-      <postMenu :cacheNews="cacheNews" @Tofilter="Tofilter"/>
+      <postMenu :cacheNews="cacheNews" @Tofilter="Tofilter" />
       <!--  父传子-->
     </div>
     <!-- 右侧主题内容 -->
@@ -15,11 +15,7 @@
         <!-- 推荐列表 -->
         <div class="suggest">
           <span @click="recover()">推荐：</span>
-          <span
-            @click="filter(item)"
-            v-for="(item,index) in places"
-            :key="index"
-          >{{item}}</span>
+          <span @click="filter(item)" v-for="(item,index) in places" :key="index">{{item}}</span>
         </div>
         <!-- 推荐攻略 -->
         <div class="suggestIdeas">
@@ -91,7 +87,7 @@
                 <span class="el-icon-view">&nbsp;&nbsp;{{item.watch}}</span>
               </div>
               <div class="rightSide">
-                <em>{{item.like}}</em> 赞
+                <em>{{item.like ===null? 0:item.like}} 赞</em>
               </div>
             </div>
           </div>
@@ -127,7 +123,7 @@
                   <span class="el-icon-view">&nbsp;&nbsp;{{item.watch}}</span>
                 </div>
                 <div class="rightSide">
-                  <em>{{item.like}}</em> 赞
+                  <em>{{item.like ===null? 0:item.like}} 赞</em>
                 </div>
               </div>
             </div>
@@ -196,18 +192,19 @@ export default {
       });
       this.cacheNews.data = Arr;
     },
-    // 请求封装, // 当点击推荐的时候，恢复数据
+    // 请求封装, // 当点击推荐的时候，恢复数据, 传入分页的数据
     recover() {
       this.$axios({
         url: "/posts"
       }).then(res => {
         if (res.status === 200) {
+          // console.log(res)
           this.news = res.data;
           this.cacheNews = { ...res.data };
           this.total = res.data.total;
           this.cacheNews.data.forEach(element => {
             // console.log(element.images.length)
-            this.arrLength = element.images.length;
+          this.arrLength = element.images.length;
           });
         }
       });
@@ -215,19 +212,24 @@ export default {
     // 子传父筛选
     Tofilter(item) {
       // console.log(item);
-      this.filter(item)
+      this.filter(item);
     },
     //点击每页几条的时候变化数据
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
       this.pageSize = val;
       this.pageIndex = 1;
+      this.recover()
     },
     // 点击第几页的时候跳转
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
       this.pageIndex = val;
+      // this.recover()
     }
+  },
+  computed:{
+    
   }
 };
 </script>

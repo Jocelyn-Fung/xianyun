@@ -25,7 +25,7 @@ ul,ol,li{
   list-style: none;
 }
 a{
-  // color:inherit;
+  color:inherit;
   text-decoration: none;
 }
 // a:hover{
