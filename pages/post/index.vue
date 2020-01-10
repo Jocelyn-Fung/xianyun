@@ -34,10 +34,10 @@
           <!-- 新闻内容 结构1 -->
           <div class="structor1" v-if="item.images.length>=2">
             <p class="title">
-              <a href="#">{{item.title}}</a>
+              <a :href="'/post/detail?id='+`${item.id}`">{{item.title}}</a>
             </p>
             <div class="newsBody">
-              <a href="#">
+              <a :href="'/post/detail?id='+`${item.id}`">
                 <div class="content">{{item.summary}}</div>
                 <!-- 图片的显示 -->
                 <div class="newsPics active" v-show="item.images.length===3">
@@ -80,7 +80,7 @@
                     alt
                     class="emoji"
                   />
-                  <a href="#">
+                  <a :href="'/post/detail?id='+`${item.id}`">
                     <em>{{item.account.nickname}}</em>
                   </a>
                 </span>
@@ -94,16 +94,16 @@
           <!--新闻内容 结构2-->
           <div class="structor2" v-if="item.images.length<2">
             <div class="newsPic">
-              <router-link to="#">
+              <router-link :to="'/post/detail?id='+`${item.id}`">
                 <img :src="`${item.images[0]}`" alt />
               </router-link>
             </div>
             <div class="newsBody">
               <h4 class="title">
-                <a href="#">{{item.title}}</a>
+                <a :href="'/post/detail?id='+`${item.id}`">{{item.title}}</a>
               </h4>
               <div class="content">
-                <a href="#">{{item.summary}}</a>
+                <a :href="'/post/detail?id='+`${item.id}`">{{item.summary}}</a>
               </div>
               <!-- 发帖的用户信息 -->
               <div class="userInfo">
@@ -205,7 +205,7 @@ export default {
           this.total = res.data.total;
           this.cacheNews.data.forEach(element => {
             // console.log(element.images.length)
-          this.arrLength = element.images.length;
+            this.arrLength = element.images.length;
           });
         }
       });
@@ -214,7 +214,7 @@ export default {
     Tofilter(item) {
       // console.log(item);
       this.filter(item);
-      this.searchPlace = item
+      this.searchPlace = item;
     },
     //点击每页几条的时候变化数据
     handleSizeChange(val) {
@@ -231,11 +231,11 @@ export default {
     }
   },
   // 监听页码的变化
-  computed:{
-    rankPage(){
-     const start = (this.pageIndex-1)*this.pageSize
-     const end = this.pageIndex*this.pageSize
-    //  console.log(this.cacheNews.data)
+  computed: {
+    rankPage() {
+      const start = (this.pageIndex - 1) * this.pageSize;
+      const end = this.pageIndex * this.pageSize;
+      //  console.log(this.cacheNews.data)
     }
   }
 };
@@ -334,6 +334,7 @@ export default {
       font-weight: 600;
       a {
         color: black;
+        font-weight: 400;
       }
     }
     .content {
@@ -355,24 +356,37 @@ export default {
   }
 }
 // 新闻结构2---3张图
+.structor2 .newsBody .content a {
+  color: #888;
+  font-size: 14px;
+}
 .news {
   border-bottom: 1px solid #ccc;
   padding: 15px 0;
   .title {
     font-size: 18px;
     margin-bottom: 15px;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /*超出3行部分显示省略号，去掉该属性 显示全部*/
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     a {
       color: black;
+    }
+    a:hover {
+      color: #ffa500;
     }
   }
   .newsBody {
     a {
-      color: #999;
-      font-size: 14px;
+      font-size: 18px;
       .content {
+        color: #888;
+        font-size: 14px;
         line-height: 20px;
         height: 60px;
-        text-overflow: ellipsis;
+        text-overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 3; /*超出3行部分显示省略号，去掉该属性 显示全部*/
         -webkit-box-orient: vertical;
@@ -405,5 +419,8 @@ export default {
 // 分页
 .el-pagination {
   padding-top: 15px;
+}
+/deep/.userInfo .leftSide em{
+  font-size: 12px;
 }
 </style>

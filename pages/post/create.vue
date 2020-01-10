@@ -107,7 +107,8 @@ export default {
       }).then(res => {
         //  console.log(res)
         if (res.data.status === 0) {
-          this.$message.success('新增成功！');
+          this.$message.success('新增成功！跳转到上一页');
+          this.$router.back()
           this.cityName='',
           this.form.city='',
           this.form.title='',
