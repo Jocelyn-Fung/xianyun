@@ -24,7 +24,7 @@
             @click="ToComment()"
             class="el-icon-edit-outline"
           >评论({{form[0] && form[0].comments.length}})</span>
-          <span @click="ToCollect()" class="el-icon-star-off" :class="{active:IsCollect}">收藏</span>
+          <span @click="ToCollect()" class="el-icon-star-off">收藏</span>
           <span @click="ToShare()" class="el-icon-share">分享</span>
           <span
             @click="ToLike()"
@@ -34,13 +34,13 @@
       </div>
       <div class="sendComment">
         <p>评论</p>
-        <el-input :rows="2"  type="textarea" v-model="comment" placeholder="说点什么吧..."></el-input>
+        <el-input :rows="2" type="textarea" v-model="comment" placeholder="说点什么吧..."></el-input>
         <!--图片上传框 -->
         <div class="uploaddeploy">
           <el-upload
             action="https://jsonplaceholder.typicode.com/posts/"
             list-type="picture-card"
-            :on-preview="handlePictureCardPreview"
+            :on-success="handleSuccess"
             :on-remove="handleRemove"
           >
             <i class="el-icon-plus"></i>
@@ -49,7 +49,7 @@
             <img width="100%" :src="dialogImageUrl" alt />
           </el-dialog>
           <div class="right">
-            <el-button type="primary">提交</el-button>
+            <el-button type="primary" @click="ToSubmit">提交</el-button>
           </div>
         </div>
       </div>
@@ -69,8 +69,6 @@ export default {
       //   图片上传
       dialogImageUrl: "",
       dialogVisible: false,
-      //   动态收藏
-      IsCollect: false,
       //   文章数据
       form: [
         {
@@ -106,7 +104,6 @@ export default {
           // console.log(res)
           if (res.status === 200) {
             this.$message.warning("收藏成功！");
-            this.IsCollect = true;
           }
         })
         .catch(err => {
@@ -129,19 +126,26 @@ export default {
         .then(res => {
           if (res.status === 200) {
             this.$message.warning("点赞成功！");
-             this.Request()
+            this.Request();
           }
         })
         .catch(err => {
           this.$message.warning("你已经赞过了呢！");
         });
     },
+    // ToSubmit 发表评论
+    ToSubmit() {},
+    // 删除图片的时候触发
     handleRemove(file, fileList) {
       console.log(file, fileList);
+
     },
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
+    // 图片成功的时候触发
+    handleSuccess(response, file, fileList) {
+    console.log(response,file, fileList)
+    //response 可以获取到id，对象
+    // file 获取到当前图片的状态的信息，数组
+    // fileList 获取到完整的数据，数组 多张图片
     },
     // 封装请求
     Request() {
@@ -163,7 +167,7 @@ export default {
     }
   },
   created() {
-      this.Request()
+    this.Request();
   }
 };
 </script>
@@ -185,7 +189,7 @@ export default {
 // 文章详情
 .article {
   h2 {
-    padding: 20px;
+    padding: 20px 0px;
     border-bottom: 1px solid #ccc;
   }
   .info {
@@ -196,11 +200,9 @@ export default {
   }
   /deep/.content {
     width: 700px;
-    p {
-      padding: 10px 0px;
-    }
     img {
       width: 100%;
+      margin-top:10px;
     }
   }
   .more {
@@ -262,7 +264,13 @@ export default {
     line-height: 103px;
   }
 }
-.active::before {
-  color: red !important;
+.el-upload-list--picture-card
+  .el-upload-list__item，
+  .el-upload-list__item-preview,
+.el-upload-list__item .is-success,
+.el-upload-list__item-actions,
+  .el-upload-list__item-delete {
+  width: 98px;
+  height: 98px;
 }
 </style>

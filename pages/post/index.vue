@@ -28,9 +28,7 @@
             >写游记</el-button>
           </span>
         </div>
-        <!-- 测试 -->
-        <!-- <span style="display:none;">{{setPageList}}</span> -->
-        <div class="news" v-for="(item,index) in cacheNews.data" :key="'news2-'+index">
+        <div class="news" v-for="(item,index) in rankPage" :key="'news2-'+index">
           <!-- 新闻内容 结构1 -->
           <div class="structor1" v-if="item.images.length>=2">
             <p class="title">
@@ -139,7 +137,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
         ></el-pagination>
-        <span>{{rankPage}}</span>
+        <!-- <span>{{rankPage}}</span> 监听返回结果，rankPage直接拿来渲染上面的数据--> 
       </div>
     </div>
   </div>
@@ -200,8 +198,10 @@ export default {
       }).then(res => {
         if (res.status === 200) {
           // console.log(res)
-          this.news = res.data;
-          this.cacheNews = { ...res.data };
+          if (res.data) {
+            this.news = res.data;
+            this.cacheNews = { ...res.data };
+          }
           this.total = res.data.total;
           this.cacheNews.data.forEach(element => {
             // console.log(element.images.length)
@@ -235,7 +235,10 @@ export default {
     rankPage() {
       const start = (this.pageIndex - 1) * this.pageSize;
       const end = this.pageIndex * this.pageSize;
-      //  console.log(this.cacheNews.data)
+      if (this.cacheNews.data) {
+       return  this.cacheNews.data.slice(start, end);
+      }
+
     }
   }
 };
@@ -420,7 +423,7 @@ export default {
 .el-pagination {
   padding-top: 15px;
 }
-/deep/.userInfo .leftSide em{
+/deep/.userInfo .leftSide em {
   font-size: 12px;
 }
 </style>
