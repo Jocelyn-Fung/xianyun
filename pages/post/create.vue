@@ -63,20 +63,22 @@ export default {
       config: {
         // 上传图片的配置
         uploadImage: {
-          // url:this.$tore.state.post.baseURL,
-          name: "file",
+          url:'http://localhost:1337/upload',
+          name: "files",
           // res是结果，insert方法会把内容注入到编辑器中，res.data.url是资源地址
           uploadSuccess(res, insert) {
-            // insert(this.$tore.state.post.baseURL + res.data.url);
+            insert('http://localhost:1337' + res.data[0].url);
+            // console.log(res) //200成功了
           }
         },
 
         // 上传视频的配置
         uploadVideo: {
-          // url: this.$tore.state.post.baseURL,
-          name: "file",
+          url: 'http://localhost:1337/upload',
+          name: "files",
           uploadSuccess(res, insert) {
-            // insert(this.$tore.state.post.baseURL + res.data.url);
+            // console.log(res)
+            insert('http://localhost:1337'+ res.data[0].url);
           }
         }
       }
@@ -112,7 +114,7 @@ export default {
           this.form.content='' //此处的内容清空不了
         }
       });
-    },
+    }, 
     //保存到草稿箱
     saveToSektchBox() {
       // var content = this.$refs.vueEditor.editor.root.innerHTML; //获取到标签的内容
@@ -149,16 +151,18 @@ export default {
     },
     // 此函数用于获取到用户选择的游玩城市,
     handleSelect(item) {
-      // console.log(item.name);
-      // console.log(item)
       this.cityName = item.name;
       this.form.city = item.id;
     },
-    // 上传图片和上传视频的配置
-    // uploadBefore(){
-    //       console.log(file)
-    // }
-  }
+    // 这里是文件上传视频的el中组件的测试方法 成功时调用的钩子函数
+    handleSuccess (response, files, filesList) {
+      if (response.status === 200) {
+        //   如果文件上传成功了就把文件的地址赋值给content
+        this.form.content = 'http://localhost:1337' + response.data[0].url
+      }
+    },
+  },
+
 };
 </script>
 

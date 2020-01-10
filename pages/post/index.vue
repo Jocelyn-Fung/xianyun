@@ -235,6 +235,7 @@ export default {
     rankPage(){
      const start = (this.pageIndex-1)*this.pageSize
      const end = this.pageIndex*this.pageSize
+    //  console.log(this.cacheNews.data)
     }
   }
 };
