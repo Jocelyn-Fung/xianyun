@@ -325,7 +325,7 @@ export default {
   .newsPic {
     flex: 30%;
     img {
-      width: 100%;
+     max-width: 100%;
       height: 140px;
     }
   }
@@ -425,5 +425,9 @@ export default {
 }
 /deep/.userInfo .leftSide em {
   font-size: 12px;
+}
+/deep/ .img3{
+  width:100px;
+  height: 100px;
 }
 </style>

@@ -13,7 +13,7 @@
         <div class="info">
           <span
             class="date"
-          >攻略：{{form[0] && new Date(this.form[0].created_at).toLocaleString().split('-')[0]}}</span>
+          >攻略：{{form[0] && this.form[0].city.created_at}}</span>
           <span class="read">阅读：{{form[0] && form[0].watch}}</span>
         </div>
         <!-- 文章主体内容 -->
@@ -32,43 +32,20 @@
           >点赞({{form[0] && form[0].like==null? 0:form[0].like}})</span>
         </div>
       </div>
-      <div class="sendComment">
-        <p>评论</p>
-        <el-input :rows="2" type="textarea" v-model="comment" placeholder="说点什么吧..."></el-input>
-        <!--图片上传框 -->
-        <div class="uploaddeploy">
-          <el-upload
-            action="https://jsonplaceholder.typicode.com/posts/"
-            list-type="picture-card"
-            :on-success="handleSuccess"
-            :on-remove="handleRemove"
-          >
-            <i class="el-icon-plus"></i>
-          </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt />
-          </el-dialog>
-          <div class="right">
-            <el-button type="primary" @click="ToSubmit">提交</el-button>
-          </div>
-        </div>
-      </div>
+      <!-- 文章评论子组件 -->
+      <postComment/>
     </div>
     <div class="commentList">右边评论发布</div>
   </div>
 </template>
 
 <script>
-// 引入封装好的时间过滤器
-import { dateForm } from "../../utils/mufilters";
+
+// 引入文章评论的子组件
+import postComment from '../../components/post/postComment'
 export default {
   data() {
     return {
-      // 评论输入框
-      comment: "",
-      //   图片上传
-      dialogImageUrl: "",
-      dialogVisible: false,
       //   文章数据
       form: [
         {
@@ -79,12 +56,12 @@ export default {
           like: null,
           comments: []
         }
-      ]
+      ],
+      
     };
   },
-  //   注册过滤器
-  filters: {
-    dateForm
+  components:{
+    postComment
   },
   methods: {
     //   ToCollect 收藏文章
@@ -133,20 +110,6 @@ export default {
           this.$message.warning("你已经赞过了呢！");
         });
     },
-    // ToSubmit 发表评论
-    ToSubmit() {},
-    // 删除图片的时候触发
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-
-    },
-    // 图片成功的时候触发
-    handleSuccess(response, file, fileList) {
-    console.log(response,file, fileList)
-    //response 可以获取到id，对象
-    // file 获取到当前图片的状态的信息，数组
-    // fileList 获取到完整的数据，数组 多张图片
-    },
     // 封装请求
     Request() {
       this.$axios({
@@ -161,6 +124,8 @@ export default {
           this.form = res.data.data;
           if (this.form) {
             document.querySelector(".content").innerHTML = this.form[0].content;
+            this.form[0].comments =res.data.data[0].comments;
+            // console.log('123',res.data.data[0].comments)
           }
         }
       });
@@ -201,8 +166,8 @@ export default {
   /deep/.content {
     width: 700px;
     img {
-      width: 100%;
-      margin-top:10px;
+      max-width: 100%;
+      margin-top: 10px;
     }
   }
   .more {
@@ -234,43 +199,5 @@ export default {
       font-weight: 600;
     }
   }
-}
-// 发布评论
-.sendComment {
-  p {
-    font-size: 16px;
-    padding: 15px 0px;
-    font-weight: 500;
-  }
-  /deep/.el-input__inner {
-    height: 50px;
-    margin: 5px 0px;
-  }
-  //   图片上传布局
-  .uploaddeploy {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    margin-bottom: 20px;
-  }
-  /deep/ .el-upload--picture-card {
-    height: 98px;
-    width: 98px;
-  }
-  .el-button--primary {
-    padding: 7px 10px;
-  }
-  /deep/.el-upload--picture-card {
-    line-height: 103px;
-  }
-}
-.el-upload-list--picture-card
-  .el-upload-list__item，
-  .el-upload-list__item-preview,
-.el-upload-list__item .is-success,
-.el-upload-list__item-actions,
-  .el-upload-list__item-delete {
-  width: 98px;
-  height: 98px;
 }
 </style>
