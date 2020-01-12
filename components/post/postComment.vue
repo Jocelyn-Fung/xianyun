@@ -2,7 +2,10 @@
   <!-- 发文章评论 -->
   <div class="sendComment">
     <p>评论</p>
-    <el-input :rows="2" type="textarea" v-model="content" placeholder="说点什么吧..."></el-input>
+    <div class="replySb" v-show="isShow">
+      <el-tag closable type="info" @close="handleClose()">回复 @{{nickname}}</el-tag>
+    </div>
+    <el-input :rows="2" type="textarea" v-model="content" placeholder="说点什么吧..." ref="input"></el-input>
     <!--图片上传框 -->
     <div class="uploaddeploy">
       <el-upload
@@ -37,11 +40,11 @@
       </div>
       <div class="content">{{item.content}}</div>
       <div class="reply" v-show="currentIndex===index">
-        <span>回复</span>
+        <span @click="ToComment(item)">回复</span>
       </div>
     </div>
-     <!-- 没有内容的时候,显示暂无评论,赶紧抢沙发 -->
-      <div v-show="total===0" class="sofa">暂无评论,赶紧抢沙发</div>
+    <!-- 没有内容的时候,显示暂无评论,赶紧抢沙发 -->
+    <div v-show="total===0" class="sofa">暂无评论,赶紧抢沙发</div>
     <!-- 分页 -->
     <el-pagination
       @size-change="handleSizeChange"
@@ -61,24 +64,25 @@ import { dateForm } from "../../utils/mufilters";
 export default {
   data() {
     return {
+      userId:'',//@的对象id
+      nickname:'', //@的对象名字
+      isShow:false,
       // hover的时候显示回复
       currentIndex: "0",
       // 提交评论所需的参数
       content: "",
       pics: [], //评论需要的图片数组
-      post: 0, //评论需要的文章id,
+      post:0,
       // 评论输入框
-
       //   图片上传
       dialogImageUrl: "",
       dialogVisible: false,
       // 评论图片数组
-
       form: [], //评论数据
-      aform: [], //缓存数据
+      // aform: [], //缓存数据
       pageIndex: 1, //当前页
       pageSize: 3, //每页3条
-      total: 0//总页数
+      total: 0 //总页数
     };
   },
   //   注册过滤器
@@ -105,13 +109,8 @@ export default {
         // console.log(res);
         if (res.data.message === "提交成功") {
           this.$message.warning("评论发布成功！");
-          this.rankPage.unshift({
-            content: this.content,
-            pics: this.pics,
-            post: this.post
-          });
-          console.log(this.rankPage);
-          // this.ToRequest();
+          this.content=''
+          this.ToRequest()
         }
       });
     },
@@ -150,34 +149,58 @@ export default {
     // 请求的封装
     ToRequest() {
       this.$axios({
-        method: "get",
         url: "/posts/comments",
         params: {
           post: this.$route.query.id
         }
       }).then(res => {
-        //    console.log(res)
         if (res.status === 200) {
-          this.form = res.data.data;
-          this.aform = [...res.data.data];
-          // console.log(this.aform)
-          // console.log(this.rankPage)
-          // console.log(this.form)
-          this.total = res.data.data.length;
+          let {data,total}=res.data
+          this.form =data;
+          this.total = total;
         }
       });
+    },
+    // 评论某人
+    ToComment(item) {
+      this.userId = item.account.id;
+      this.nickname = item.account.nickname
+      this.isShow = true;
+      // console.log(userId)
+      //应该点击获取到follow
+      let token = this.$store.state.user.userInfo.token;
+      // this.$axios({
+      //   method:'post',
+      //   url:'comments',
+      //   headers:{
+      //     Authorization: 'Bearer ' +token
+      //   },
+      //   data:{
+      //     content:this.content,
+      //     pics:this.pics,
+      //     post:this.post,
+      //     follow: userId
+      //   }
+      // }).then(res=>{
+      //   console.log(res)
+      // })
+    },
+    // 关闭@
+    handleClose(){
+      this.isShow=false;
     }
   },
   created() {
-    this.ToRequest();
+    this.post = this.$route.query.id
+     this.ToRequest()
   },
   // 监听页码的变化
   computed: {
     rankPage() {
       const start = (this.pageIndex - 1) * this.pageSize;
       const end = this.pageIndex * this.pageSize;
-      if (this.aform) {
-        return this.aform.slice(start, end);
+      if (this.form) {
+        return this.form.slice(start, end);
       }
     }
   }
@@ -260,10 +283,13 @@ export default {
   height: 24px !important;
   margin: 0px !important;
 }
-.sofa{
-  border:1px dashed #ccc;
-  padding:25px 0px;
+.sofa {
+  border: 1px dashed #ccc;
+  padding: 25px 0px;
   text-align: center;
   color: #ccc;
+}
+.replySb{
+  margin:10px 0px;
 }
 </style>
