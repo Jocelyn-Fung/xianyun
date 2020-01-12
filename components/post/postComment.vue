@@ -2,7 +2,7 @@
   <!-- 发文章评论 -->
   <div class="sendComment">
     <p>评论</p>
-    <el-input :rows="2" type="textarea" v-model="comment" placeholder="说点什么吧..."></el-input>
+    <el-input :rows="2" type="textarea" v-model="content" placeholder="说点什么吧..."></el-input>
     <!--图片上传框 -->
     <div class="uploaddeploy">
       <el-upload
@@ -21,7 +21,12 @@
       </div>
     </div>
     <!-- 评论区域 -->
-    <div class="commentList" v-for="(item,index) in rankPage" :key="index"  @mouseenter="ToChange(index)">
+    <div
+      class="commentList"
+      v-for="(item,index) in rankPage"
+      :key="index"
+      @mouseenter="ToChange(index)"
+    >
       <div class="comment1">
         <div class="left">
           <img :src="'http://localhost:1337'+item.account.defaultAvatar" alt />
@@ -31,8 +36,12 @@
         <div class="right">1</div>
       </div>
       <div class="content">{{item.content}}</div>
-      <div class="reply" v-show="currentIndex===index"><span>回复</span></div>
+      <div class="reply" v-show="currentIndex===index">
+        <span>回复</span>
+      </div>
     </div>
+     <!-- 没有内容的时候,显示暂无评论,赶紧抢沙发 -->
+      <div v-show="total===0" class="sofa">暂无评论,赶紧抢沙发</div>
     <!-- 分页 -->
     <el-pagination
       @size-change="handleSizeChange"
@@ -49,25 +58,27 @@
 <script>
 // 引入封装好的时间过滤器
 import { dateForm } from "../../utils/mufilters";
-
 export default {
   data() {
     return {
-        // hover的时候显示回复
-        currentIndex:"0",
+      // hover的时候显示回复
+      currentIndex: "0",
+      // 提交评论所需的参数
+      content: "",
+      pics: [], //评论需要的图片数组
+      post: 0, //评论需要的文章id,
       // 评论输入框
-      comment: "",
+
       //   图片上传
       dialogImageUrl: "",
       dialogVisible: false,
       // 评论图片数组
-      pics: [], //评论需要的图片数组
-      post: 0, //评论需要的文章id,
+
       form: [], //评论数据
       aform: [], //缓存数据
       pageIndex: 1, //当前页
       pageSize: 3, //每页3条
-      total: 1 //总页数
+      total: 0//总页数
     };
   },
   //   注册过滤器
@@ -76,7 +87,34 @@ export default {
   },
   methods: {
     // ToSubmit 发表评论
-    ToSubmit() {},
+    ToSubmit() {
+      // console.log(this.content) 评论内容
+      let token = this.$store.state.user.userInfo.token;
+      this.$axios({
+        method: "POST",
+        url: "comments",
+        headers: {
+          Authorization: "Bearer " + token
+        },
+        data: {
+          content: this.content,
+          pics: this.pics,
+          post: this.post
+        }
+      }).then(res => {
+        // console.log(res);
+        if (res.data.message === "提交成功") {
+          this.$message.warning("评论发布成功！");
+          this.rankPage.unshift({
+            content: this.content,
+            pics: this.pics,
+            post: this.post
+          });
+          console.log(this.rankPage);
+          // this.ToRequest();
+        }
+      });
+    },
     // 删除图片的时候触发
     handleRemove(file, fileList) {
       // console.log(file, fileList); //前者是删除的，后者是剩下的
@@ -106,34 +144,40 @@ export default {
       // console.log(`当前页: ${val}`);
       this.pageIndex = val;
     },
-    ToChange(index){
-        this.currentIndex=index
+    ToChange(index) {
+      this.currentIndex = index;
+    },
+    // 请求的封装
+    ToRequest() {
+      this.$axios({
+        method: "get",
+        url: "/posts/comments",
+        params: {
+          post: this.$route.query.id
+        }
+      }).then(res => {
+        //    console.log(res)
+        if (res.status === 200) {
+          this.form = res.data.data;
+          this.aform = [...res.data.data];
+          // console.log(this.aform)
+          // console.log(this.rankPage)
+          // console.log(this.form)
+          this.total = res.data.data.length;
+        }
+      });
     }
   },
   created() {
-    this.$axios({
-      method: "get",
-      url: "/posts/comments",
-      params: {
-        post: this.$route.query.id
-      }
-    }).then(res => {
-      //    console.log(res)
-      if (res.status === 200) {
-        this.form = res.data.data;
-        this.aform = { ...res.data };
-        // console.log(this.aform)
-        this.total = res.data.data.length;
-      }
-    });
+    this.ToRequest();
   },
   // 监听页码的变化
   computed: {
     rankPage() {
       const start = (this.pageIndex - 1) * this.pageSize;
       const end = this.pageIndex * this.pageSize;
-      if (this.aform.data) {
-        return this.aform.data.slice(start, end);
+      if (this.aform) {
+        return this.aform.slice(start, end);
       }
     }
   }
@@ -197,12 +241,12 @@ export default {
   .reply {
     color: #2a10d2;
     font-size: 12px;
-    margin-right:20px;
+    margin-right: 20px;
     text-align: right;
   }
-  .reply:hover span{
-      border-bottom: 1px solid #2a10d2;
-      cursor: pointer;
+  .reply:hover span {
+    border-bottom: 1px solid #2a10d2;
+    cursor: pointer;
   }
 }
 .content {
@@ -215,5 +259,11 @@ export default {
 /deep/.el-input__inner {
   height: 24px !important;
   margin: 0px !important;
+}
+.sofa{
+  border:1px dashed #ccc;
+  padding:25px 0px;
+  text-align: center;
+  color: #ccc;
 }
 </style>

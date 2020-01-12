@@ -35,7 +35,7 @@
       <!-- 文章评论子组件 -->
       <postComment/>
     </div>
-    <div class="commentList">右边评论发布</div>
+    <div class="commentList"><commentAside /></div>
   </div>
 </template>
 
@@ -43,6 +43,7 @@
 
 // 引入文章评论的子组件
 import postComment from '../../components/post/postComment'
+import commentAside from '../../components/post/commentAside'
 export default {
   data() {
     return {
@@ -61,7 +62,8 @@ export default {
     };
   },
   components:{
-    postComment
+    postComment,
+    commentAside
   },
   methods: {
     //   ToCollect 收藏文章
@@ -148,7 +150,6 @@ export default {
   }
   .commentList {
     flex: 280px;
-    border: 1px solid red;
   }
 }
 // 文章详情
