@@ -5,8 +5,7 @@ export const state = () => {
     // 购买保险的数量
     insurances: 0,
     // 历史记录
-    history: [
-  ]
+    history: []
   }
 }
 

@@ -3,7 +3,7 @@
   <div class="sendComment">
     <p>评论</p>
     <div class="replySb" v-show="isShow">
-      <el-tag closable type="info" @close="handleClose()">回复 @{{nickname}}</el-tag>
+      <el-tag closable type="info" @close="handleClose()" id="btn">回复 @{{nickname}}</el-tag>
     </div>
     <el-input :rows="2" resize="none" type="textarea" v-model="content" placeholder="说点什么吧..."></el-input>
     <!--图片上传框 action是上传到哪里的路径 ref='upload'//清空图片数组的-->
@@ -91,7 +91,7 @@ export default {
       // 提交评论所需的参数
       content: "", //输入框的内容
       pics: [], //评论需要的图片数组
-      post: 0,
+      post: 0,  //文章id
       // 评论输入框
       //   图片上传
       dialogImageUrl: "",
@@ -138,20 +138,23 @@ export default {
         return;
       }
       let token = this.$store.state.user.userInfo.token;
+      let pics = this.pics
       this.$axios({
-        method: "POST",
+        method: 'POST',
         url: "comments",
         headers: {
-          Authorization: "Bearer " + token
+        Authorization: "Bearer " + token
         },
         data: {
           content: this.content,
-          pics: this.pics,
-          post: this.post
+          follow: this.userId,
+          pics,
+          post: +this.post
+          
         }
       })
         .then(res => {
-          // console.log(res);
+          console.log(res);
           if (res.data.message === "提交成功") {
             this.$message.warning("评论发布成功！");
             this.content = "";
@@ -159,10 +162,10 @@ export default {
             this.ToRequest();
           }
         })
-        .catch(err => {
-          this.$message.warning("请先登录账号！");
-          this.$router.push({ path: "/user/login" });
-        });
+        // .catch(err => {
+        //   this.$message.warning("请先登录账号！");
+        //   this.$router.push({ path: "/user/login" });
+        // });
     },
 
     //点击每页几条的时候变化数据
@@ -201,27 +204,11 @@ export default {
     // 评论某人
     ToComment(item) {
       // console.log(item)
-      this.userId = item.account.id;
-      this.nickname = item.account.nickname;
+      this.userId = item.account.id;  //应该点击获取到follow,要回复的对象id
+      this.nickname = item.account.nickname; //要回复的对象
       this.isShow = true;
-      // console.log(userId)
-      //应该点击获取到follow
       let token = this.$store.state.user.userInfo.token;
-      // this.$axios({
-      //   method:'post',
-      //   url:'comments',
-      //   headers:{
-      //     Authorization: 'Bearer ' +token
-      //   },
-      //   data:{
-      //     content:this.content,
-      //     pics:this.pics,
-      //     post:this.post,
-      //     follow: this.userId
-      //   }
-      // }).then(res=>{
-      //   console.log(res)
-      // })
+      location.href="#btn"
     },
     // 关闭@
     handleClose() {
@@ -238,7 +225,7 @@ export default {
       const start = (this.pageIndex - 1) * this.pageSize;
       const end = this.pageIndex * this.pageSize;
       if (this.form) {
-        console.log(this.form);
+        // console.log(this.form);
         return this.form.slice(start, end);
       }
     }
@@ -283,6 +270,9 @@ export default {
     min-height: 100px;
     width: 100%;
     border-bottom: 1px dashed #ccc;
+    &:last-child{
+      border-bottom:none;
+    }
     .comment1 {
       display: flex;
       justify-content: space-between;

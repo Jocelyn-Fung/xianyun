@@ -20,3 +20,4 @@ export const dateForm = (data, spe) => {
   }
   return year + spe + month + spe + date + spe + hour + ' : ' + mins
 }
+

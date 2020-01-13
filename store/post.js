@@ -2,8 +2,7 @@
 export const state = () => {
   return {
     baseURL: '',
-    // news: {},
-    // cacheNews:{}
+    // sketchHistory:[]
   }
 }
 
@@ -11,10 +10,8 @@ export const mutations = {
   SetBaseURL(state, data) {
     state.baseURL = data
   },
-  // 将请求回来的数据保存到state中
-  // ToRequest(state, data) {
-  //   state.news = data
-  //   state.cacheNews ={...data}
+  // addSketchHistory(state,data){
+  //   state.sketchHistory = data
   // }
 }
 // // 异步请求 将请求封装到本地

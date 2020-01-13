@@ -29,13 +29,14 @@
     <!-- 右边草稿箱 -->
     <div class="aside">
       <div class="sketchBox">
-        <div class="sketch">草稿箱（0）</div>
-        <div class="sketchList">
-          <p class="sketchAgain">
-            <span class="sketchTitle">1231</span>
+        <div class="sketch">草稿箱（）</div>
+        <div class="sketchList" > 
+          <!-- v-for="(item,index) in " :key="index" {{length}}-->
+          <p class="sketchAgain" @click="toSketch()">
+            <span class="sketchTitle">item.title</span>
             <i class="el-icon-edit"></i>
           </p>
-          <p class="sketchDate">2020-01-09</p>
+          <p class="sketchDate">item.date</p>
         </div>
       </div>
     </div>
@@ -46,6 +47,7 @@
 // 引入富文本
 import VueEditor from "vue-word-editor";
 import "quill/dist/quill.snow.css";
+// 引入时间过滤器
 export default {
   name: "app",
   data() {
@@ -63,39 +65,43 @@ export default {
       config: {
         // 上传图片的配置
         uploadImage: {
-          url:'http://localhost:1337/upload',
+          url: "http://localhost:1337/upload",
           name: "files",
           // res是结果，insert方法会把内容注入到编辑器中，res.data.url是资源地址
           uploadSuccess(res, insert) {
-            insert('http://localhost:1337' + res.data[0].url);
+            insert("http://localhost:1337" + res.data[0].url);
             // console.log(res) //200成功了
           }
         },
 
         // 上传视频的配置
         uploadVideo: {
-          url: 'http://localhost:1337/upload',
+          url: "http://localhost:1337/upload",
           name: "files",
           uploadSuccess(res, insert) {
             // console.log(res)
-            insert('http://localhost:1337'+ res.data[0].url);
+            insert("http://localhost:1337" + res.data[0].url);
           }
         }
-      }
+      },
+      // 草稿箱
+      sketches: [],
     };
   },
   components: {
     VueEditor
+  },
+  mounted(){
+    // this.$store.state.post.addSketchHistory = this.sketches
   },
   methods: {
     // 发布文章
     publish() {
       this.form.content = this.$refs.vueEditor.editor.root.innerHTML;
       let token = this.$store.state.user.userInfo.token;
-      //  console.log(this.form)
-      if(this.form===""){
-        this.$message.error('说点什么再发布吧！')
-        return
+      if (this.form === "") {
+        this.$message.error("说点什么再发布吧！");
+        return;
       }
       this.$axios({
         method: "post",
@@ -107,23 +113,37 @@ export default {
       }).then(res => {
         //  console.log(res)
         if (res.data.status === 0) {
-          this.$message.success('新增成功！跳转到上一页');
-          this.$router.back()
-          this.cityName='',
-          this.form.city='',
-          this.form.title='',
-          this.form.content='' //此处的内容清空不了
+          this.$message.success("新增成功！跳转到上一页");
+          this.$router.back();
+          this.cityName = "",
+          this.form.city = "",
+          this.form.title = "",
+          this.$refs.vueEditor.editor.root.innerHTML = ""; 
         }
       });
-    }, 
+    },
     //保存到草稿箱
     saveToSektchBox() {
-      // var content = this.$refs.vueEditor.editor.root.innerHTML; //获取到标签的内容
-      // console.log(this.input); //获取到标题内容
+      var content = this.$refs.vueEditor.editor.root.innerHTML; //获取到标签的内容
+      let title = this.form.title; //获取到标题内容
       // console.log(quill);
-      // console.log(this.state)  //获取到用户输入的游玩城市
+      let cityName = this.cityName; //获取到用户输入的游玩城市
+      let myDate = new Date();
+      let month = myDate.getMonth()+1
+      let day = myDate.getDate()
+      if(month<10){ month = "0"+month}
+      if(day<10){ day = "0"+day}
+      let date = myDate.getFullYear()+'-'+ month+'-'+ day 
+      this.sketches.unshift({ title, content, cityName, date }); 
+      // console.log(this.sketches) 保存到本地去
+      localStorage.setItem('postAddSketchHistory',this.sketches)
     },
-    //
+    // 点击某一个草稿就显示内容
+    toSketch(index){
+    //  this.form.title = this.$store.state.post.sketchHistory[index].title
+    //  this.cityName = this.$store.state.post.sketchHistory[index].cityName
+    //  this.$refs.vueEditor.editor.root.innerHTML = this.$store.state.post.sketchHistory[index].content
+    },
     //  用户输入游玩城市输入框获得焦点时触发,
     // queryString 是选中的值，cb是回调函数，接收要展示的列表
     querySearchAsync(value, cb) {
@@ -156,14 +176,13 @@ export default {
       this.form.city = item.id;
     },
     // 这里是文件上传视频的el中组件的测试方法 成功时调用的钩子函数
-    handleSuccess (response, files, filesList) {
+    handleSuccess(response, files, filesList) {
       if (response.status === 200) {
         //   如果文件上传成功了就把文件的地址赋值给content
-        this.form.content = 'http://localhost:1337' + response.data[0].url
+        this.form.content = "http://localhost:1337" + response.data[0].url;
       }
-    },
-  },
-
+    }
+  }
 };
 </script>
 
@@ -196,16 +215,17 @@ export default {
       font-size: 15px;
       // padding: 0px 30px 20px 0px;
       padding-left: 10px;
-      padding-bottom: 30px;
+      padding-bottom: 10px;
       width: 180px;
       margin-left: 50px;
       .sketch {
         padding: 15px 0px;
       }
       .sketchList {
-        font-size: 14px;
+        margin-bottom: 10px;
         .sketchDate {
           color: #999;
+          font-size: 14px;
         }
       }
     }
@@ -221,7 +241,15 @@ export default {
     }
     .sketch {
       color: #ffa500;
+      cursor: pointer;
     }
+    .sketch:hover{
+      border-bottom:1px solid #ffa500;
+    }
+  }
+  .sketchAgain:hover{
+    color: #ffa500;
+    cursor: pointer;
   }
 }
 </style>
