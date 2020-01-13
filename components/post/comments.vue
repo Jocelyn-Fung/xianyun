@@ -11,7 +11,7 @@
       <div class="right">{{data.parent && data.parent.level}}</div>
     </div>
     <div class="content">
-      <commentRecusion v-if="data.parent && data.parent.parent" />
+      <commentRecusion v-if="data.parent && data.parent.parent" :data="data.parent"/>
       <p>{{data.parent.content}}</p>
       <div class="forpics" v-if="data.parent.pics && data.parent.pics.length !==0">
         <img
