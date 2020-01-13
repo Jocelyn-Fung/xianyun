@@ -29,14 +29,13 @@
     <!-- 右边草稿箱 -->
     <div class="aside">
       <div class="sketchBox">
-        <div class="sketch">草稿箱（）</div>
-        <div class="sketchList" > 
-          <!-- v-for="(item,index) in " :key="index" {{length}}-->
-          <p class="sketchAgain" @click="toSketch()">
-            <span class="sketchTitle">item.title</span>
+        <div class="sketch" id="draft">草稿箱（{{$store.state.post.sketchHistory.length}}）</div>
+        <div class="sketchList" v-for="(item,index) in $store.state.post.sketchHistory" :key="index">
+          <p class="sketchAgain" @click="toSketch(index)">
+            <span class="sketchTitle">{{item.title}}</span>
             <i class="el-icon-edit"></i>
           </p>
-          <p class="sketchDate">item.date</p>
+          <p class="sketchDate">{{item.date}}</p>
         </div>
       </div>
     </div>
@@ -83,9 +82,7 @@ export default {
             insert("http://localhost:1337" + res.data[0].url);
           }
         }
-      },
-      // 草稿箱
-      sketches: [],
+      }
     };
   },
   components: {
@@ -126,7 +123,6 @@ export default {
     saveToSektchBox() {
       var content = this.$refs.vueEditor.editor.root.innerHTML; //获取到标签的内容
       let title = this.form.title; //获取到标题内容
-      // console.log(quill);
       let cityName = this.cityName; //获取到用户输入的游玩城市
       let myDate = new Date();
       let month = myDate.getMonth()+1
@@ -134,15 +130,17 @@ export default {
       if(month<10){ month = "0"+month}
       if(day<10){ day = "0"+day}
       let date = myDate.getFullYear()+'-'+ month+'-'+ day 
-      this.sketches.unshift({ title, content, cityName, date }); 
-      // console.log(this.sketches) 保存到本地去
-      localStorage.setItem('postAddSketchHistory',this.sketches)
+      this.$store.commit('post/addSketchHistory', {
+        content,title,cityName,date
+      })
+      this.$message.warning('已保存到草稿箱')
+      location.href='#draft'
     },
     // 点击某一个草稿就显示内容
     toSketch(index){
-    //  this.form.title = this.$store.state.post.sketchHistory[index].title
-    //  this.cityName = this.$store.state.post.sketchHistory[index].cityName
-    //  this.$refs.vueEditor.editor.root.innerHTML = this.$store.state.post.sketchHistory[index].content
+     this.form.title = this.$store.state.post.sketchHistory[index].title
+     this.cityName = this.$store.state.post.sketchHistory[index].cityName
+     this.$refs.vueEditor.editor.root.innerHTML = this.$store.state.post.sketchHistory[index].content
     },
     //  用户输入游玩城市输入框获得焦点时触发,
     // queryString 是选中的值，cb是回调函数，接收要展示的列表

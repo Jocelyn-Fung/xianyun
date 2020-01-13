@@ -2,7 +2,7 @@
 export const state = () => {
   return {
     baseURL: '',
-    // sketchHistory:[]
+    sketchHistory:[]
   }
 }
 
@@ -10,9 +10,9 @@ export const mutations = {
   SetBaseURL(state, data) {
     state.baseURL = data
   },
-  // addSketchHistory(state,data){
-  //   state.sketchHistory = data
-  // }
+  addSketchHistory(state,data){
+    state.sketchHistory.unshift(data) 
+  }
 }
 // // 异步请求 将请求封装到本地
 // export const actions = {
