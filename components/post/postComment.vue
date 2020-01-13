@@ -42,10 +42,10 @@
             <span class="commentSendedr">{{item.account.nickname}}</span>
             <span class="commentDate">{{item.account.created_at | dateForm}}</span>
           </div>
-          <div class="right">1</div>
+          <div class="right">{{item.level}}</div>
         </div>
         <div class="content">
-          <myComments />
+          <myComments :data="form[0]" v-if="item.parent" @commentSb="ToComment(item)"/>
           <p>{{item.content}}</p>
           <div class="forpics" v-if="item.pics.length !==0">
             <img
@@ -77,6 +77,7 @@
 </template>
 
 <script>
+
 // 引入封装好的时间过滤器
 import { dateForm } from "../../utils/mufilters";
 import myComments from "../../components/post/comments";
@@ -161,11 +162,10 @@ export default {
             this.$refs.upload.clearFiles();
             this.ToRequest();
           }
-        })
-        // .catch(err => {
-        //   this.$message.warning("请先登录账号！");
-        //   this.$router.push({ path: "/user/login" });
-        // });
+        }).catch(err => {
+          this.$message.warning("请先登录账号！");
+          this.$router.push({ path: "/user/login" });
+        });
     },
 
     //点击每页几条的时候变化数据
@@ -204,11 +204,11 @@ export default {
     // 评论某人
     ToComment(item) {
       // console.log(item)
-      this.userId = item.account.id;  //应该点击获取到follow,要回复的对象id
+      this.userId = item.id;  //应该点击获取到follow,要回复的id
       this.nickname = item.account.nickname; //要回复的对象
       this.isShow = true;
       let token = this.$store.state.user.userInfo.token;
-      location.href="#btn"
+      location.href="#btn"  //实现定位
     },
     // 关闭@
     handleClose() {
