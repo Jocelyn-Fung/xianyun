@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 左侧菜单 -->
     <div class="left">
-      <postMenu :cacheNews="cacheNews" @Tofilter="Tofilter" />
+      <postMenu :cacheNews="cacheNews" @Tofilter="Tofilter" @ToSuggestion='recover'/>
       <!--  父传子-->
     </div>
     <!-- 右侧主题内容 -->
@@ -15,7 +15,7 @@
         <!-- 推荐列表 -->
         <div class="suggest">
           <span @click="recover()">推荐：</span>
-          <span @click="filter(item)" v-for="(item,index) in places" :key="index">{{item}}</span>
+          <span @click="filter(item)" v-for="(item,index) in places" :key="index" class="subtiltle">{{item}}</span>
         </div>
         <!-- 推荐攻略 -->
         <div class="suggestIdeas">
@@ -429,5 +429,9 @@ export default {
 /deep/ .img3{
   width:100px;
   height: 100px;
+}
+.subtiltle:hover{
+color: #ffa500;
+border-bottom:1px solid #ffa500;
 }
 </style>

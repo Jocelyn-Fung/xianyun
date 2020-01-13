@@ -25,9 +25,9 @@
     </ul>
     <span class="line" v-show="isshow"></span>
     <p class="suggestCity">推荐城市</p>
-    <a href="#">
-      <img src="@/assets/images/01.pic_sea.jpg" alt />
-    </a>
+    <!-- <a href="#"> -->
+      <img src="@/assets/images/01.pic_sea.jpg" alt @click="JumpToSuggest"/>
+    <!-- </a> -->
   </div>
 </template>
 
@@ -57,6 +57,10 @@ export default {
       this.cityItem = item;
       // console.log(this.cityItem)
       this.$emit("Tofilter", this.cityItem);
+    },
+    // 点击显示所有数据
+    JumpToSuggest(){
+      this.$emit('ToSuggestion')
     }
   },
   mounted() {
